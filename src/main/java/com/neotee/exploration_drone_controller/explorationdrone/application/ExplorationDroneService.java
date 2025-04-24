@@ -37,7 +37,6 @@ public class ExplorationDroneService implements DroneServiceInterface {
         return droneValidator.validateDroneExists(droneId);
     }
 
-    @Override
     public UUID getDronePlanet(UUID droneId) {
         ExplorationDrone explorationDrone = droneValidator.validateDroneExists(droneId);
         return explorationDrone.getPlanet().getId();
@@ -46,5 +45,15 @@ public class ExplorationDroneService implements DroneServiceInterface {
     @Override
     public void save(Drone drone) {
         explorationDroneRepository.save((ExplorationDrone) drone);
+    }
+
+    @Override
+    public void validateSpawn(UUID droneId) {
+        droneValidator.validateSpawn(droneId);
+    }
+
+    @Override
+    public Drone validateDroneExists(UUID droneId) {
+        return droneValidator.validateDroneExists(droneId);
     }
 }

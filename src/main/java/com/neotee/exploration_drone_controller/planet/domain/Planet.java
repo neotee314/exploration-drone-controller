@@ -51,12 +51,13 @@ public class Planet {
     private PlanetVisitStatus visitStatus = NOT_VISITED;
 
 
-    private boolean isMined = false;
+    private boolean isMined;
 
 
     public Planet() {
         this.id = UUID.randomUUID();
         setPlanetType(UNKNOWN);
+        this.isMined= false;
         setVisitStatus(NOT_VISITED);
     }
 
@@ -176,12 +177,6 @@ public class Planet {
         return this.planetType.equals(SPACE_STATION);
     }
 
-    public Boolean canDroneMine(Drone drone) {
-        if (drones.isEmpty() || !drones.contains(drone))
-            throw new ExplorationDroneControlException("Drone is not on this planet");
-        drones.sort(Comparator.comparing(Drone::getUranium, new UraniumComparator()));
-        return drones.getFirst().equals(drone);
-    }
 
     public void removeHyperTunnel(Tunnel tunnel) {
         if (tunnel == null) throw new ExplorationDroneControlException("Tunnel cannot be null");

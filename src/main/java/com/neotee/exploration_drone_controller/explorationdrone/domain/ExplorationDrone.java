@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import static com.neotee.exploration_drone_controller.explorationdrone.domain.TransportState.NOT_TRANSPORTED;
 import static com.neotee.exploration_drone_controller.explorationdrone.domain.TransportState.TRANSPORTED;
-import static java.lang.Boolean.TRUE;
+
 
 @Getter
 @Setter
@@ -138,9 +138,6 @@ public class ExplorationDrone extends Drone {
 
         if (planet.isOrigin())
             throw new ExplorationDroneControlException("Mining on the origin planet is not allowed");
-
-        if (!planet.canDroneMine(this))
-            throw new ExplorationDroneControlException("Drone is not allowed to mine on this planet");
 
         Uranium available = planet.getUranium();
         Uranium excess = load.leaveBehindWhenFillingFrom(available);

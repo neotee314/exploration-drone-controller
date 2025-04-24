@@ -18,7 +18,6 @@ public class PlanetService {
 
     private final PlanetRepository planetRepository;
     private final PlanetValidator planetValidator;
-    private final DroneValidator droneValidator;
     private final DroneServiceInterface droneServiceInterface;
 
     public void save(Planet planet) {
@@ -26,10 +25,9 @@ public class PlanetService {
     }
 
 
-
     @Transactional
     public UUID findExplorationDronePlanet(UUID droneId) {
-        Drone drone = droneValidator.validateDroneExists(droneId);
+        Drone drone = droneServiceInterface.validateDroneExists(droneId);
         List<Planet> planets = getAllPlanet();
         for (Planet planet : planets) {
             if (planet.contains(drone)) {
@@ -47,7 +45,6 @@ public class PlanetService {
         }
         return planets;
     }
-
 
 
     public Uranium getUranium(UUID planetId) {
@@ -73,7 +70,7 @@ public class PlanetService {
 
     public void addToUranium(UUID planetId, Uranium uranium) {
         Planet planet = planetValidator.validatePlanetExists(planetId);
-        if(uranium==null) throw new ExplorationDroneControlException("Uranium cannot be null");
+        if (uranium == null) throw new ExplorationDroneControlException("Uranium cannot be null");
         if (!uranium.isGreaterEqualThan(Uranium.fromAmount(0)))
             throw new ExplorationDroneControlException("Uranium quantity cannot be negative");
         planet.addToUranium(uranium);
@@ -85,10 +82,10 @@ public class PlanetService {
         return planetRepository.findById(planetId).orElse(null);
     }
 
+
     public void deleteAll() {
         planetRepository.deleteAll();
     }
-
 
 
     public List<UUID> getPlanets() {
@@ -104,11 +101,12 @@ public class PlanetService {
         planetRepository.save(spaceStation);
         return spaceStation.getId();
     }
-    public Planet getSpaceStation() {
+
+    private Planet getSpaceStation() {
         List<Planet> planets = getAllPlanet();
         for (Planet planet : planets) {
             if (planet.isSpaceStation()) {
-                return  planet;
+                return planet;
             }
         }
         throw new ExplorationDroneControlException("No SpaceStation found");
@@ -116,7 +114,7 @@ public class PlanetService {
 
     @Transactional
     public void spawn(UUID droneId) {
-        droneValidator.validateSpawn(droneId);
+        droneServiceInterface.validateSpawn(droneId);
         ExplorationDrone explorationDrone = new ExplorationDrone(droneId);
 
         Planet spaceStation = getSpaceStation();
