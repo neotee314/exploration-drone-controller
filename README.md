@@ -112,8 +112,6 @@ This system was developed following:
 - Domain-Driven Design (DDD) approach
 - Layered architecture (Controller-Service-Repository)
 
-The project includes comprehensive unit and integration tests to ensure reliability and maintainability.
-Here's a comprehensive table of all API endpoints organized by their related aggregates for your README.md:
 
 ### API Endpoints by Aggregate
 
@@ -126,4 +124,4 @@ Key features of this table:
 
 
 ## License
-This project is developed for educational purposes as part of the ST2 course requirements. All rights reserved by the author, Abolfazl Heidari.
+ All rights reserved by the author, Abolfazl Heidari.
