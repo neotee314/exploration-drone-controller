@@ -1,10 +1,7 @@
 package com.neotee.exploration_drone_controller.explorationdrone.domain;
 
 import certification.ExplorationDroneControlException;
-import com.neotee.exploration_drone_controller.domainprimitives.CompassPoint;
-import com.neotee.exploration_drone_controller.domainprimitives.CompassPointPath;
-import com.neotee.exploration_drone_controller.domainprimitives.Load;
-import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
+import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.planet.domain.Drone;
 import com.neotee.exploration_drone_controller.planet.domain.Planet;
 import jakarta.persistence.*;
@@ -13,10 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.datafaker.Faker;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import static com.neotee.exploration_drone_controller.explorationdrone.domain.TransportState.NOT_TRANSPORTED;
 import static com.neotee.exploration_drone_controller.explorationdrone.domain.TransportState.TRANSPORTED;
@@ -28,12 +22,21 @@ import static com.neotee.exploration_drone_controller.explorationdrone.domain.Tr
 @NoArgsConstructor
 public class ExplorationDrone extends Drone {
 
+
+    @ElementCollection
+    @CollectionTable(
+            name = "exploration_drone_command_history",
+            joinColumns = @JoinColumn(name = "drone_id")
+    )
+
+    private List<Command> commandHistory = new ArrayList<>();
+
     public ExplorationDrone(UUID id) {
-        this.id = id;
+        this.droneId = id;
         this.name = generateCoolName();
         this.load = Load.fromCapacityAndFilling(20, Uranium.fromAmount(0));
         this.transportState = NOT_TRANSPORTED;
-        this.commandHistory = CompassPointPath.empty();
+        this.path = CompassPointPath.empty();
     }
 
     @Override
@@ -45,7 +48,7 @@ public class ExplorationDrone extends Drone {
         this.planet = movingPlanet;
         movingPlanet.addDrone(this);
         planet.markPlanetVisited();
-        this.commandHistory = this.commandHistory.addMovement(movement);
+        this.path = this.path.addMovement(movement);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class ExplorationDrone extends Drone {
             throw new ExplorationDroneControlException("Drone is already transported");
         }
 
-        CompassPointPath path = this.getCommandHistory();
+        CompassPointPath path = this.getPath();
         CompassPoint direction = path.directionToGoBackTo();
 
         if (direction == null) {
@@ -80,7 +83,7 @@ public class ExplorationDrone extends Drone {
         movingPlanet.addDrone(this);
         planet.markPlanetVisited();
 
-        this.setCommandHistory(this.commandHistory.backtrackLastMovement());
+        this.setPath(this.path.backtrackLastMovement());
     }
 
 
@@ -112,7 +115,7 @@ public class ExplorationDrone extends Drone {
         movingPlanet.addDrone(this);
         planet.markPlanetVisited();
 
-        this.commandHistory = this.commandHistory.addMovement(direction);
+        this.path = this.path.addMovement(direction);
     }
 
 
@@ -156,11 +159,38 @@ public class ExplorationDrone extends Drone {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ExplorationDrone drone = (ExplorationDrone) o;
-        return Objects.equals(getId(), drone.getId());
+        return Objects.equals(getDroneId(), drone.getDroneId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hashCode(getDroneId());
+    }
+
+    public void sendCommand(Command command) {
+
+        if (command == null)
+            throw new ExplorationDroneControlException("Command cannot be null");
+        else if (command.isMove())
+            move(command.getMoveDirection());
+        else if (command.isExplore())
+            explore();
+        else if (command.isGohome())
+            gohome();
+        else if (command.isTransport())
+            transport();
+        else if (command.isMine())
+            mine();
+        else
+            throw new ExplorationDroneControlException("Unknown command");
+        if (!command.isSpawn()) commandHistory.add(command);
+    }
+
+    public void deleteCommandHistory() {
+        commandHistory.clear();
+    }
+
+    public void addCommandHistory(Command command) {
+        if (!command.isSpawn()) commandHistory.add(command);
     }
 }

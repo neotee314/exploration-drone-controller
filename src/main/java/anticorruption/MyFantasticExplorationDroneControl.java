@@ -36,9 +36,7 @@ public class MyFantasticExplorationDroneControl implements ExplorationDroneContr
         if (command == null)
             throw new ExplorationDroneControlException("Command cannot be null");
         UUID droneId = command.getExplorationDroneId();
-
-
-        if (command.isSpawn()) planetService.spawn(droneId);
+        if (command.isSpawn()) explorationDroneService.spawn(droneId);
         else if (command.isMove())
             movementService.move(droneId, command.getMoveDirection());
         else if (command.isExplore())
@@ -49,9 +47,6 @@ public class MyFantasticExplorationDroneControl implements ExplorationDroneContr
             movementService.transport(droneId);
         else if (command.isMine())
             miningService.mine(droneId);
-
-        else throw new ExplorationDroneControlException("Unknown command type");
-
     }
 
     @Override
@@ -61,7 +56,7 @@ public class MyFantasticExplorationDroneControl implements ExplorationDroneContr
 
     @Override
     public UUID getExplorationDronePlanet(UUID explorationDroneId) {
-        return planetService.findExplorationDronePlanet(explorationDroneId);
+        return explorationDroneService.getDronePlanet(explorationDroneId);
     }
 
     @Override

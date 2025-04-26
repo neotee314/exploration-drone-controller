@@ -6,6 +6,9 @@ import certification.ExplorationDroneControl;
 import certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.explorationdrone.application.CommandDTO;
 import com.neotee.exploration_drone_controller.explorationdrone.application.ExplorationDroneDTO;
+import com.neotee.exploration_drone_controller.explorationdrone.application.ExplorationDroneService;
+import com.neotee.exploration_drone_controller.planet.application.PlanetService;
+import com.neotee.exploration_drone_controller.planet.domain.Planet;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -29,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class E1ControllerTest {
+public class  E1ControllerTest {
 
     private UUID originId;
     private static final UUID northernNeighbour = UUID.randomUUID();
@@ -184,7 +188,7 @@ public class E1ControllerTest {
         mockMvc.perform(delete(location)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         //Try to GET the deleted Entity
         mockMvc.perform(get(location)
@@ -194,6 +198,10 @@ public class E1ControllerTest {
 
     }
 
+    @Autowired
+    private PlanetService planetService;
+    @Autowired
+    private ExplorationDroneService explorationDroneService;
 
     @Test
     @Transactional
@@ -218,6 +226,8 @@ public class E1ControllerTest {
         String direction="north";
             CommandDTO commandDTO = new CommandDTO(direction, resultDTO.getId());
             jsonString = objectMapper.writeValueAsString(commandDTO);
+
+        List<Planet> planets = planetService.getAllPlanet();
 
         mockMvc.perform(post(location+"/commands")
                 .content(jsonString)

@@ -23,7 +23,7 @@ import static com.neotee.exploration_drone_controller.planet.domain.PlanetVisitS
 public class Planet {
 
     @Id
-    private UUID id;
+    private UUID planetId;
 
     @OneToMany(mappedBy = "planet", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
     protected List<Drone> drones = new ArrayList<>();
@@ -54,7 +54,7 @@ public class Planet {
 
 
     public Planet() {
-        this.id = UUID.randomUUID();
+        this.planetId = UUID.randomUUID();
         setPlanetType(UNKNOWN);
         this.isMined= false;
         setVisitStatus(NOT_VISITED);
@@ -191,16 +191,16 @@ public class Planet {
 
         if (this.equals(targetPlanet)) return null;
 
-        if (this.north != null && this.north.getId().equals(targetPlanet.getId())) {
+        if (this.north != null && this.north.getPlanetId().equals(targetPlanet.getPlanetId())) {
             return NORTH;
         }
-        if (this.south != null && this.south.getId().equals(targetPlanet.getId())) {
+        if (this.south != null && this.south.getPlanetId().equals(targetPlanet.getPlanetId())) {
             return SOUTH;
         }
-        if (this.east != null && this.east.getId().equals(targetPlanet.getId())) {
+        if (this.east != null && this.east.getPlanetId().equals(targetPlanet.getPlanetId())) {
             return EAST;
         }
-        if (this.west != null && this.west.getId().equals(targetPlanet.getId())) {
+        if (this.west != null && this.west.getPlanetId().equals(targetPlanet.getPlanetId())) {
             return WEST;
         }
         throw new ExplorationDroneControlException("Cannot determine direction to target planet");
@@ -217,11 +217,12 @@ public class Planet {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Planet planet = (Planet) o;
-        return Objects.equals(getId(), planet.getId());
+        return Objects.equals(getPlanetId(), planet.getPlanetId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hashCode(getPlanetId());
     }
+
 }

@@ -12,13 +12,14 @@ import java.util.UUID;
 @Embeddable
 @NoArgsConstructor
 @EqualsAndHashCode
+@Getter
 public class Command {
 
     private static final Set<String> COMPASS_DIRECTIONS = Set.of("north", "south", "east", "west");
     private static final Set<String> SIMPLE_COMMANDS = Set.of("spawn", "transport", "explore", "gohome", "mine");
 
     private String command;
-    @Getter
+
     private UUID explorationDroneId;
 
     private Command(String command, UUID droneId) {

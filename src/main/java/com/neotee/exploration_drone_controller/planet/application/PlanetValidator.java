@@ -34,7 +34,7 @@ public class PlanetValidator {
         return planetRepository.findById(planetId)
                 .orElseGet(() -> {
                     Planet planet = new Planet();
-                    planet.setId(planetId);
+                    planet.setPlanetId(planetId);
                     return planet;
                 });
     }
