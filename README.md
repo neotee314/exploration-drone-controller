@@ -56,6 +56,7 @@ HICCUP has established a **certification process** for software systems, ensurin
 
 ## 🛠 System Architecture
 
+
 - ![System Architeture](images/class-diagram.jpg)
 ---
 
