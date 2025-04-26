@@ -74,28 +74,23 @@ public class ExplorationDroneService implements DroneServiceInterface {
     }
 
     public ExplorationDroneDTO createFromDto(ExplorationDroneDTO request) {
-
         ExplorationDrone explorationDrone = droneMapper.toEntity(request);
-
         Planet spaceStation = planetService.getSpaceStation();
-
         spaceStation.addDrone(explorationDrone);
         spaceStation.markPlanetVisited();
         if (request.getId() == null) explorationDrone.setDroneId(UUID.randomUUID());
-        List<Command> commandHistory = new ArrayList<>();
-        if (request.getCommandHistory() != null && !request.getCommandHistory().isEmpty()) {
-            for (CommandDTO commandDTO : request.getCommandHistory()) {
-                Command command = Command.fromCommandString(commandDTO.getCommandString());
-                commandHistory.add(command);
-            }
-        }
-
-
-
-        explorationDrone.setCommandHistory(commandHistory);
+        var commandHistory = mapCommandHistory(request.getCommandHistory());
+        explorationDrone.addCommandHistory(commandHistory);
         explorationDroneRepository.save(explorationDrone);
         planetService.save(spaceStation);
         return droneMapper.toDTO(explorationDrone);
+    }
+    private List<Command> mapCommandHistory(List<CommandDTO> commandHistory) {
+        List<Command> commands = new ArrayList<>();
+        for (CommandDTO dto : commandHistory) {
+            commands.add(Command.fromCommandString(dto.getCommandString()));
+        }
+        return commands;
     }
 
 
@@ -151,6 +146,7 @@ public class ExplorationDroneService implements DroneServiceInterface {
         explorationDroneRepository.save(drone);
     }
 
+    @Transactional
     public void spawn(UUID droneId) {
         droneValidator.validateSpawn(droneId);
         ExplorationDrone explorationDrone = new ExplorationDrone(droneId);

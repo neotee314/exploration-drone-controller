@@ -158,7 +158,6 @@ public class ExplorationDrone extends Drone {
 
 
     public void sendCommand(Command command) {
-
         if (command == null)
             throw new ExplorationDroneControlException("Command cannot be null");
         else if (command.isMove())
@@ -171,14 +170,13 @@ public class ExplorationDrone extends Drone {
             transport();
         else if (command.isMine())
             mine();
-        else
-            throw new ExplorationDroneControlException("Unknown command");
-        addCommandHistory(command);
+        if (!command.isSpawn()) commandHistory.add(command);
+        throw new ExplorationDroneControlException("Invalid Command");
 
     }
 
-    public void addCommandHistory(Command command) {
-        if (!command.isSpawn()) commandHistory.add(command);
+    public void addCommandHistory(List<Command> commandHistory) {
+       this.commandHistory.addAll(commandHistory);
     }
 
     @Override
