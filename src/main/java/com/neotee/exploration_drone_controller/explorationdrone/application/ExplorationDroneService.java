@@ -118,28 +118,7 @@ public class ExplorationDroneService implements DroneServiceInterface {
         return droneMapper.toDTO(explorationDrone);
     }
 
-    @Transactional
-    public ExplorationDroneDTO addCommandHistory(UUID droneId, CommandDTO commandDTO) {
-        if (droneId == null || commandDTO == null) throw new ExplorationDroneControlException("droneId is null");
-        ExplorationDrone explorationDrone = explorationDroneRepository.findById(droneId)
-                .orElseThrow(() -> new ExplorationDroneControlException("Drone not found with id: " + droneId));
-        Command command = commandMapper.toEntity(commandDTO);
-        //Command command = Command.fromCommandString("[" + commandDTO.getCommandString() + "," + commandDTO.getExplorationDroneId() + "]");
-        explorationDrone.addCommandHistory(command);
 
-        explorationDroneRepository.save(explorationDrone);
-        return droneMapper.toDTO(explorationDrone);
-    }
-
-    public List<CommandDTO> getCommandHistory(UUID droneId) {
-        ExplorationDrone drone = explorationDroneRepository.findById(droneId)
-                .orElseThrow(() -> new ExplorationDroneControlException("Drone not found with id: " + droneId));
-
-        return drone.getCommandHistory()
-                .stream()
-                .map(commandMapper::toDTO)
-                .toList();
-    }
 
     @Transactional
     public ExplorationDroneDTO sendCommand(UUID droneId, CommandDTO request) {

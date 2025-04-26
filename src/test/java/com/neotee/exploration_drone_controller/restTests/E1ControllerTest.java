@@ -272,7 +272,7 @@ public class  E1ControllerTest {
             CommandDTO commandDTO = new CommandDTO(direction, resultDTO.getId());
             jsonString = objectMapper.writeValueAsString(commandDTO);
 
-            mockMvc.perform(post(location + "/commands/")
+            mockMvc.perform(post(location + "/commands")
                     .content(jsonString)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))

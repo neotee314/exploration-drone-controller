@@ -63,20 +63,6 @@ public class ExplorationDroneController {
         return ResponseEntity.ok(processdDto);
     }
 
-    @Operation(summary = "Give a specific exploration drone a commandhistory")
-    @PostMapping("/{droneId}/commands/")
-    public ResponseEntity<ExplorationDroneDTO> sendCommandHistory(@PathVariable UUID droneId, @RequestBody CommandDTO request) {
-        ExplorationDroneDTO processedDTO = explorationDroneService.addCommandHistory(droneId, request);
-
-        URI returnURI = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(processedDTO.getId())
-                .toUri();
-        return ResponseEntity
-                .created(returnURI)
-                .body(processedDTO);
-    }
 
     @Operation(summary = "Give a specific exploration drone a command")
     @PostMapping("/{droneId}/commands")

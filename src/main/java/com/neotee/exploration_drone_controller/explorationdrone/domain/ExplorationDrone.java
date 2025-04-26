@@ -155,17 +155,7 @@ public class ExplorationDrone extends Drone {
         return this.getLoad().getUranium();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        ExplorationDrone drone = (ExplorationDrone) o;
-        return Objects.equals(getDroneId(), drone.getDroneId());
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getDroneId());
-    }
 
     public void sendCommand(Command command) {
 
@@ -183,7 +173,7 @@ public class ExplorationDrone extends Drone {
             mine();
         else
             throw new ExplorationDroneControlException("Unknown command");
-        if (!command.isSpawn()) commandHistory.add(command);
+
     }
 
     public void deleteCommandHistory() {
@@ -192,5 +182,17 @@ public class ExplorationDrone extends Drone {
 
     public void addCommandHistory(Command command) {
         if (!command.isSpawn()) commandHistory.add(command);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ExplorationDrone drone = (ExplorationDrone) o;
+        return Objects.equals(getDroneId(), drone.getDroneId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getDroneId());
     }
 }
