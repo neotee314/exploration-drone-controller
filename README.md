@@ -16,10 +16,8 @@ HICCUP has established a **certification process** for software systems, ensurin
 |--------|-------------|
 | **Planet** | A planet that can be regular or a Space Station. It holds drones, uranium, neighbors, and hyperspace tunnels. |
 | **ExplorationDrone** | An autonomous exploration drone that can move, mine, explore, and transport through tunnels. |
-| **Tunnel / HyperspaceEnergyTunnel** | A unidirectional hyperspace tunnel connecting two planets for instant drone transport. |
-| **Load / Uranium** | Represents a drone’s uranium capacity and current load. |
-| **CompassPoint / CompassPointPath** | Tracks directions and movement history of drones. |
-| **TransportState** | Indicates whether a drone has been transported via a tunnel. |
+| **HyperspaceEnergyTunnel** | A unidirectional hyperspace tunnel connecting two planets for instant drone transport. |
+
 
 ---
 
