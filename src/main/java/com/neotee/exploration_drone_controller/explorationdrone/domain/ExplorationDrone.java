@@ -173,11 +173,8 @@ public class ExplorationDrone extends Drone {
             mine();
         else
             throw new ExplorationDroneControlException("Unknown command");
+        addCommandHistory(command);
 
-    }
-
-    public void deleteCommandHistory() {
-        commandHistory.clear();
     }
 
     public void addCommandHistory(Command command) {

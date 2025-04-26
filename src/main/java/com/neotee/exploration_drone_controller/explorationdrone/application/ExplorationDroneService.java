@@ -74,28 +74,29 @@ public class ExplorationDroneService implements DroneServiceInterface {
     }
 
     public ExplorationDroneDTO createFromDto(ExplorationDroneDTO request) {
+
         ExplorationDrone explorationDrone = droneMapper.toEntity(request);
+
         Planet spaceStation = planetService.getSpaceStation();
+
         spaceStation.addDrone(explorationDrone);
         spaceStation.markPlanetVisited();
-
         if (request.getId() == null) explorationDrone.setDroneId(UUID.randomUUID());
-
         List<Command> commandHistory = new ArrayList<>();
         if (request.getCommandHistory() != null && !request.getCommandHistory().isEmpty()) {
             for (CommandDTO commandDTO : request.getCommandHistory()) {
-                Command command = commandMapper.toEntity(commandDTO);
+                Command command = Command.fromCommandString(commandDTO.getCommandString());
                 commandHistory.add(command);
             }
         }
 
+
+
         explorationDrone.setCommandHistory(commandHistory);
         explorationDroneRepository.save(explorationDrone);
         planetService.save(spaceStation);
-
         return droneMapper.toDTO(explorationDrone);
     }
-
 
 
     public ExplorationDroneDTO getDroneById(UUID droneId) {
@@ -118,17 +119,7 @@ public class ExplorationDroneService implements DroneServiceInterface {
         return droneMapper.toDTO(explorationDrone);
     }
 
-    @Transactional
-    public ExplorationDroneDTO addCommandHistory(UUID droneId, CommandDTO commandDTO) {
-        if (droneId == null || commandDTO == null) throw new ExplorationDroneControlException("droneId is null");
-        ExplorationDrone explorationDrone = explorationDroneRepository.findById(droneId)
-                .orElseThrow(() -> new ExplorationDroneControlException("Drone not found with id: " + droneId));
-        Command command = commandMapper.toEntity(commandDTO);
-         explorationDrone.addCommandHistory(command);
 
-        explorationDroneRepository.save(explorationDrone);
-        return droneMapper.toDTO(explorationDrone);
-    }
 
     public List<CommandDTO> getCommandHistory(UUID droneId) {
         ExplorationDrone drone = explorationDroneRepository.findById(droneId)
