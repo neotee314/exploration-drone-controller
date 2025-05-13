@@ -6,10 +6,9 @@ import certification.HyperspaceEnergyTunnelUseCases;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.domainprimitives.Load;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
-import com.neotee.exploration_drone_controller.explorationdrone.application.DroneValidator;
 import com.neotee.exploration_drone_controller.explorationdrone.application.MiningService;
 import com.neotee.exploration_drone_controller.explorationdrone.application.MovementService;
-import com.neotee.exploration_drone_controller.explorationdrone.application.ExplorationDroneService;
+import com.neotee.exploration_drone_controller.explorationdrone.application.ExplorationDroneManagementService;
 import com.neotee.exploration_drone_controller.planet.application.PlanetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,7 +22,7 @@ import java.util.UUID;
 @ComponentScan("com.neotee.exploration_drone_controller")
 public class MyFantasticExplorationDroneControl implements ExplorationDroneControl {
 
-    private final ExplorationDroneService explorationDroneService;
+    private final ExplorationDroneManagementService explorationDroneService;
     private final PlanetService planetService;
     private final HyperspaceEnergyTunnelUseCases hyperspaceEnergyTunnelUseCases;
     private final MovementService movementService;

@@ -6,7 +6,7 @@ import certification.ExplorationDroneControl;
 import certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.explorationdrone.application.CommandDTO;
 import com.neotee.exploration_drone_controller.explorationdrone.application.ExplorationDroneDTO;
-import com.neotee.exploration_drone_controller.explorationdrone.application.ExplorationDroneService;
+import com.neotee.exploration_drone_controller.explorationdrone.application.ExplorationDroneManagementService;
 import com.neotee.exploration_drone_controller.planet.application.PlanetService;
 import com.neotee.exploration_drone_controller.planet.domain.Planet;
 import org.hamcrest.Matchers;
@@ -201,7 +201,7 @@ public class  E1ControllerTest {
     @Autowired
     private PlanetService planetService;
     @Autowired
-    private ExplorationDroneService explorationDroneService;
+    private ExplorationDroneManagementService explorationDroneService;
 
     @Test
     @Transactional

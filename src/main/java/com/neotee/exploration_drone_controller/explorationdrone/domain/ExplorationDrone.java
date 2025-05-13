@@ -175,9 +175,6 @@ public class ExplorationDrone extends Drone {
 
     }
 
-    public void addCommandHistory(List<Command> commandHistory) {
-       this.commandHistory.addAll(commandHistory);
-    }
 
     @Override
     public boolean equals(Object o) {
