@@ -111,13 +111,16 @@ public class ExplorationDroneApplicationService {
         explorationDroneRepository.deleteById(droneId);
     }
 
-    public ExplorationDroneDTO spawn(DroneIdDTO droneId) {
-        if (droneId == null || droneId.getDroneId()==null) throw new ExplorationDroneControlException("DroneId is null");
-        Planet spaceSation =planetService.getSpaceStation();
+    public ExplorationDroneDTO spawn(DroneIdDTO droneIdDTO) {
+        UUID droneId = UUID.randomUUID();
+        if (droneIdDTO != null && droneIdDTO.getDroneId() != null) {
+            droneId = droneIdDTO.getDroneId();
+        }
+        Planet spaceSation = planetService.getSpaceStation();
         if (spaceSation == null) throw new ExplorationDroneControlException("No space station");
-        ExplorationDrone drone = explorationDroneRepository.findById(droneId.getDroneId()).orElse(null);
-        if(drone!=null) throw new ExplorationDroneControlException("Drone already exists");
-        drone = new ExplorationDrone(droneId.getDroneId());
+        ExplorationDrone drone = explorationDroneRepository.findById(droneId).orElse(null);
+        if (drone != null) throw new ExplorationDroneControlException("Drone already exists");
+        drone = new ExplorationDrone(droneId);
         drone.setPlanet(spaceSation);
         drone.setCommandHistory(new ArrayList<>());
         explorationDroneRepository.save(drone);

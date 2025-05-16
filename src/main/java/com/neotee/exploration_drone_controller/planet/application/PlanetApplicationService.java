@@ -26,14 +26,11 @@ public class PlanetApplicationService {
     private final UraniumMapper uraniumMapper;
 
     public PlanetDTO createPlanet(PlanetIdDTO planetIdDTO) {
-        if (planetIdDTO == null || planetIdDTO.getPlanetId() == null)
-            throw new ExplorationDroneControlException("Planet id cannot be null");
-        try {
-            UUID.fromString(planetIdDTO.getPlanetId()+"");
-        } catch (ExplorationDroneControlException e) {
-            throw new ExplorationDroneControlException(planetIdDTO + " is not a valid UUID");
+        UUID planetId = UUID.randomUUID();
+        if (planetIdDTO != null && planetIdDTO.getPlanetId() != null) {
+            planetId = planetIdDTO.getPlanetId();
         }
-        UUID planetId = planetIdDTO.getPlanetId();
+
         List<Planet> planets = planetRepository.findAll();
         if (planets.isEmpty()) {
             Planet planet = new Planet();
@@ -55,12 +52,14 @@ public class PlanetApplicationService {
 
     @Transactional
     public void addNeighbour(AddNeighbourDTO addNeighbourDTO) {
-        if(addNeighbourDTO == null || addNeighbourDTO.getPlanetId() == null||
-                addNeighbourDTO.getNeighbourId() == null ||
+        UUID neighbourId = UUID.randomUUID();
+        if (addNeighbourDTO == null || addNeighbourDTO.getPlanetId() == null ||
                 addNeighbourDTO.getCompassPointDTO() == null)
             throw new ExplorationDroneControlException("planetId and neighbour must not be null");
+        if( addNeighbourDTO.getNeighbourId() != null){
+            neighbourId = addNeighbourDTO.getNeighbourId();
+        }
         UUID planetId = addNeighbourDTO.getPlanetId();
-        UUID neighbourId = addNeighbourDTO.getNeighbourId();
         CompassPointDTO compassPointDTO = addNeighbourDTO.getCompassPointDTO();
         Planet planet = planetRepository.findById(planetId).orElseThrow(() -> new ExplorationDroneControlException("Planet not found"));
         Planet neighbor = planetRepository.findById(neighbourId).orElse(null);
@@ -71,8 +70,8 @@ public class PlanetApplicationService {
             planetRepository.save(neighbor);
         }
         CompassPoint compassPoint = CompassPoint.fromString(compassPointDTO.getDirection().toString());
-        planet.addNeighbour(neighbor,compassPoint);
-        neighbor.addNeighbour(planet,compassPoint.oppositeDirection());
+        planet.addNeighbour(neighbor, compassPoint);
+        neighbor.addNeighbour(planet, compassPoint.oppositeDirection());
         planetRepository.save(neighbor);
         planetRepository.save(planet);
     }
