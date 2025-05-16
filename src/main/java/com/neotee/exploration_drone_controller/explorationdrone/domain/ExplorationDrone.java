@@ -5,6 +5,7 @@ import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.planet.domain.Drone;
 import com.neotee.exploration_drone_controller.planet.domain.Planet;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,13 +23,11 @@ import static com.neotee.exploration_drone_controller.explorationdrone.domain.Tr
 @NoArgsConstructor
 public class ExplorationDrone extends Drone {
 
-
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "exploration_drone_command_history",
             joinColumns = @JoinColumn(name = "drone_id")
     )
-
     private List<Command> commandHistory = new ArrayList<>();
 
     public ExplorationDrone(UUID id) {
@@ -37,6 +36,7 @@ public class ExplorationDrone extends Drone {
         this.load = Load.fromCapacityAndFilling(20, Uranium.fromAmount(0));
         this.transportState = NOT_TRANSPORTED;
         this.path = CompassPointPath.empty();
+        this.commandHistory = new ArrayList<>();
     }
 
     @Override
@@ -156,7 +156,6 @@ public class ExplorationDrone extends Drone {
     }
 
 
-
     public void sendCommand(Command command) {
         if (command == null)
             throw new ExplorationDroneControlException("Command cannot be null");
@@ -170,9 +169,9 @@ public class ExplorationDrone extends Drone {
             transport();
         else if (command.isMine())
             mine();
-        if (!command.isSpawn()) commandHistory.add(command);
-        throw new ExplorationDroneControlException("Invalid Command");
-
+        if (!command.isSpawn()) {
+            commandHistory.add(command);
+        }
     }
 
 

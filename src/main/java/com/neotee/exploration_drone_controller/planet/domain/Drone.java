@@ -29,7 +29,7 @@ public abstract class Drone {
     protected CompassPointPath path = CompassPointPath.empty();
 
     @ManyToOne
-    @JoinColumn//(name = "planet_id")
+    @JoinColumn
     protected Planet planet;
 
     @Enumerated(EnumType.STRING)

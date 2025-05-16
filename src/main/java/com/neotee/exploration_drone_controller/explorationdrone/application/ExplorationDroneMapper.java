@@ -1,11 +1,8 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application;
 
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDrone;
-import com.neotee.exploration_drone_controller.planet.domain.Planet;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
-import java.util.UUID;
 
 @Mapper(componentModel = "spring", uses = {CommandMapper.class})
 public interface ExplorationDroneMapper {

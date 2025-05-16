@@ -6,7 +6,6 @@ import com.neotee.exploration_drone_controller.explorationdrone.domain.Explorati
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDroneRepository;
 import com.neotee.exploration_drone_controller.planet.application.PlanetService;
 import com.neotee.exploration_drone_controller.planet.domain.Planet;
-import com.neotee.exploration_drone_controller.planet.domain.PlanetType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -27,20 +25,32 @@ public class ExplorationDroneApplicationService {
 
 
     public ExplorationDroneDTO createFromDto(ExplorationDroneDTO request) {
-        Planet spaceStation = new Planet();
-        spaceStation.setPlanetId(request.getPlanetId());
-        spaceStation.setPlanetType(PlanetType.SPACE_STATION);
-        planetService.save(spaceStation);
 
+        Planet planet = planetService.getSpaceStation();
+
+        UUID planetId = request.getPlanetId();
+        Planet foundPlanet = planetService.findPlanetById(planetId);
+        if (foundPlanet == null && planet == null) {
+            planet = new Planet();
+        } else if (planetService.findPlanetById(planetId) != null) {
+            planet = planetService.findPlanetById(planetId);
+        }
+
+        planetService.save(planet);
+
+        UUID droneId = request.getId();
+        if (droneId == null) droneId = UUID.randomUUID();
+        request.setId(droneId);
         ExplorationDrone explorationDrone = droneMapper.toEntity(request);
+        explorationDrone.setCommandHistory(new ArrayList<>());
         explorationDroneRepository.save(explorationDrone);
 
-        spaceStation.addDrone(explorationDrone);
-        spaceStation.markPlanetVisited();
+        planet.addDrone(explorationDrone);
+        planet.markPlanetVisited();
 
-        explorationDrone.setPlanet(spaceStation);
+        explorationDrone.setPlanet(planet);
         explorationDroneRepository.save(explorationDrone);
-        planetService.save(spaceStation);
+        planetService.save(planet);
         return droneMapper.toDTO(explorationDrone);
     }
 
@@ -96,9 +106,22 @@ public class ExplorationDroneApplicationService {
     }
 
 
-
     public void deleteDrone(UUID droneId) {
         if (droneId == null) throw new ExplorationDroneControlException("DroneId is null");
         explorationDroneRepository.deleteById(droneId);
+    }
+
+    public ExplorationDroneDTO spawn(DroneIdDTO droneId) {
+        if (droneId == null || droneId.getDroneId()==null) throw new ExplorationDroneControlException("DroneId is null");
+        Planet spaceSation =planetService.getSpaceStation();
+        if (spaceSation == null) throw new ExplorationDroneControlException("No space station");
+        ExplorationDrone drone = explorationDroneRepository.findById(droneId.getDroneId()).orElse(null);
+        if(drone!=null) throw new ExplorationDroneControlException("Drone already exists");
+        drone = new ExplorationDrone(droneId.getDroneId());
+        drone.setPlanet(spaceSation);
+        drone.setCommandHistory(new ArrayList<>());
+        explorationDroneRepository.save(drone);
+        spaceSation.addDrone(drone);
+        return droneMapper.toDTO(drone);
     }
 }

@@ -24,8 +24,6 @@ public class PlanetService {
     }
 
 
-
-
     public List<Planet> getAllPlanet() {
         List<Planet> planets = new ArrayList<>();
         Iterable<Planet> planetIterable = planetRepository.findAll();
@@ -66,6 +64,7 @@ public class PlanetService {
 
 
     public Planet findPlanetById(UUID planetId) {
+        if (planetId == null) return null;
         return planetRepository.findById(planetId).orElse(null);
     }
 
@@ -100,14 +99,13 @@ public class PlanetService {
         throw new ExplorationDroneControlException("No SpaceStation found");
     }
 /**
-    @Transactional
-    public void spawn(UUID droneId) {
-        droneServiceInterface.validateSpawn(droneId);
-        ExplorationDrone explorationDrone = new ExplorationDrone(droneId);
+ @Transactional public void spawn(UUID droneId) {
+ droneServiceInterface.validateSpawn(droneId);
+ ExplorationDrone explorationDrone = new ExplorationDrone(droneId);
 
-        Planet spaceStation = getSpaceStation();
-        spaceStation.addDrone(explorationDrone);
-        spaceStation.markPlanetVisited();
-        planetRepository.save(spaceStation);
-    }**/
+ Planet spaceStation = getSpaceStation();
+ spaceStation.addDrone(explorationDrone);
+ spaceStation.markPlanetVisited();
+ planetRepository.save(spaceStation);
+ }**/
 }

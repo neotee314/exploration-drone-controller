@@ -25,18 +25,13 @@ public class ExplorationDroneController {
         return ResponseEntity.ok(explorationDroneApplicationService.getAllDrones());
     }
 
-    @Operation(summary = "Create a new exploration drone")
-    @PostMapping
-    public ResponseEntity<ExplorationDroneDTO> createDrone(@RequestBody ExplorationDroneDTO request) {
-        ExplorationDroneDTO explorationDroneDTO = explorationDroneApplicationService.createFromDto(request);
-        URI returnURI = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{explorationDrone-id}")
-                .buildAndExpand(explorationDroneDTO.getId())
-                .toUri();
-        return ResponseEntity
-                .created(returnURI)
-                .body(explorationDroneDTO);
+
+    @Operation(summary = "spawn a new exploration drone on space station")
+    @PostMapping("/spawn")
+    public ResponseEntity<ExplorationDroneDTO> spawnDrone(@RequestBody DroneIdDTO droneId) {
+        ExplorationDroneDTO explorationDroneDTO = explorationDroneApplicationService.spawn(droneId);
+        if (explorationDroneDTO == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(explorationDroneDTO);
     }
 
     @Operation(summary = "Get a specific exploration drone by ID")
