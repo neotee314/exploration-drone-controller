@@ -2,8 +2,8 @@ package com.neotee.exploration_drone_controller.planet.application;
 
 import certification.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.CompassPoint;
-import com.neotee.exploration_drone_controller.planet.domain.Planet;
-import com.neotee.exploration_drone_controller.planet.domain.PlanetRepository;
+import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
+import com.neotee.exploration_drone_controller.planet.domain.repository.PlanetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

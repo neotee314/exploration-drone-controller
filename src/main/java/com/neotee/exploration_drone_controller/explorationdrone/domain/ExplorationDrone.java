@@ -2,10 +2,9 @@ package com.neotee.exploration_drone_controller.explorationdrone.domain;
 
 import certification.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.*;
-import com.neotee.exploration_drone_controller.planet.domain.Drone;
-import com.neotee.exploration_drone_controller.planet.domain.Planet;
+import com.neotee.exploration_drone_controller.planet.domain.model.Drone;
+import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,11 +22,8 @@ import static com.neotee.exploration_drone_controller.explorationdrone.domain.Tr
 @NoArgsConstructor
 public class ExplorationDrone extends Drone {
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "exploration_drone_command_history",
-            joinColumns = @JoinColumn(name = "drone_id")
-    )
+    @ElementCollection
+    @CollectionTable
     private List<Command> commandHistory = new ArrayList<>();
 
     public ExplorationDrone(UUID id) {
