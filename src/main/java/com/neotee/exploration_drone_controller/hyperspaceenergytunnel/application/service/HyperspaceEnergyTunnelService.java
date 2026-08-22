@@ -1,11 +1,10 @@
 package com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.service;
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.TunnelValidator;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain.HyperspaceEnergyTunnel;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain.HyperspaceEnergyTunnelRepository;
 import com.neotee.exploration_drone_controller.planet.application.service.PlanetService;
-import com.neotee.exploration_drone_controller.planet.application.PlanetValidator;
 import com.neotee.exploration_drone_controller.planet.application.TunnelServiceInterface;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import jakarta.transaction.Transactional;

@@ -1,6 +1,6 @@
 package com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain;
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import jakarta.persistence.*;
 import lombok.Getter;

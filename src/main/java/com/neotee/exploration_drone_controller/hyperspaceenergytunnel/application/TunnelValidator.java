@@ -1,6 +1,6 @@
 package com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application;
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain.HyperspaceEnergyTunnelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,13 +1,13 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.mapper;
 
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
-import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandDTO;
+import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandRequestDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface CommandMapper {
 
-    default Command toEntity(CommandDTO commandDTO) {
+    default Command toCommand(CommandRequestDto commandDTO) {
         if (commandDTO == null) {
             return null;
         }
@@ -16,11 +16,11 @@ public interface CommandMapper {
         return Command.fromCommandString(commandString);
     }
 
-    default CommandDTO toDTO(Command command) {
+    default CommandRequestDto toDTO(Command command) {
         if (command == null) {
             return null;
         }
-        return new CommandDTO(
+        return new CommandRequestDto(
                 command.getCommandString(),
                 command.getExplorationDroneId()
         );

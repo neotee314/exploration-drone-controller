@@ -1,7 +1,7 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.service;
 
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.explorationdrone.application.DroneValidator;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDrone;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDroneRepository;

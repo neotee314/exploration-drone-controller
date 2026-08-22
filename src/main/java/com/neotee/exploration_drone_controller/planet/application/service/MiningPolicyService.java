@@ -1,12 +1,8 @@
 package com.neotee.exploration_drone_controller.planet.application.service;
 
-import certification.ExplorationDroneControlException;
-import com.neotee.exploration_drone_controller.explorationdrone.domain.UraniumComparator;
-import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import com.neotee.exploration_drone_controller.planet.domain.service.MiningPolicyInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.Comparator;
 
 @Service
 @RequiredArgsConstructor

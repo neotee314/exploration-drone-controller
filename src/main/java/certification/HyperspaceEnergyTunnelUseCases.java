@@ -1,5 +1,7 @@
 package certification;
 
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
+
 import java.util.UUID;
 
 public interface HyperspaceEnergyTunnelUseCases {

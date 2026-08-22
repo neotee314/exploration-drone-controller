@@ -1,11 +1,10 @@
 package com.neotee.exploration_drone_controller.planet.application.service;
 
-import certification.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.CompassPoint;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import com.neotee.exploration_drone_controller.planet.domain.repository.PlanetRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -48,5 +47,15 @@ public class PlanetApplicationService {
     public Planet addUranium(Planet planet, Uranium uranium) {
         planet.addToUranium(uranium);
         return planetRepository.save(planet);
+    }
+
+    public Planet getSpaceStation() {
+        var planets = planetRepository.findAll();
+        for (Planet planet : planets) {
+            if (planet.isOrigin()) {
+                return planet;
+            }
+        }
+        return null;
     }
 }

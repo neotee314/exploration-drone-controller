@@ -1,7 +1,7 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.service;
 
 import certification.ExplorationDroneControl;
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import certification.HyperspaceEnergyTunnelUseCases;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.domainprimitives.Load;

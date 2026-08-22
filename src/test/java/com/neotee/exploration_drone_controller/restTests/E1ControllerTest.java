@@ -4,8 +4,8 @@ package com.neotee.exploration_drone_controller.restTests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import certification.ExplorationDroneControl;
 import certification.PlanetExamining;
-import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandDTO;
-import com.neotee.exploration_drone_controller.explorationdrone.application.dto.ExplorationDroneDTO;
+import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandRequestDto;
+import com.neotee.exploration_drone_controller.explorationdrone.application.dto.ExplorationDroneResponseDTO;
 import com.neotee.exploration_drone_controller.explorationdrone.application.service.ExplorationDroneManagementService;
 import com.neotee.exploration_drone_controller.planet.application.service.PlanetService;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
@@ -54,10 +54,10 @@ public class  E1ControllerTest {
         planetExamining.neighboursDetected(originId, northernNeighbour, null, null, null);
     }
 
-    private ExplorationDroneDTO getRandomExplorationDroneDTO(){
+    private ExplorationDroneResponseDTO getRandomExplorationDroneDTO(){
         int generation=new Random().nextInt(117);
         String name = "Herbert der "+generation+".";
-        ExplorationDroneDTO botDTO=new ExplorationDroneDTO(name, null, null, null);
+        ExplorationDroneResponseDTO botDTO=new ExplorationDroneResponseDTO(name, null, null, null);
         return botDTO;
     }
 
@@ -65,7 +65,7 @@ public class  E1ControllerTest {
     @Test
     public void postAndGetTest() throws Exception{
 
-        ExplorationDroneDTO botDTO=getRandomExplorationDroneDTO();
+        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
         var jsonString = objectMapper.writeValueAsString(botDTO);
 
         //POST new Entity
@@ -78,7 +78,7 @@ public class  E1ControllerTest {
                 .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
         String content = result.getResponse().getContentAsString();
         String location = result.getResponse().getHeader("Location");
-        ExplorationDroneDTO resultDTO = objectMapper.readValue(content, ExplorationDroneDTO.class);
+        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
 
         //GET the Posted Entity using the location-Header
         mockMvc.perform(get(location)
@@ -96,7 +96,7 @@ public class  E1ControllerTest {
         int size=5;
         //POST 5 new Entities
         for(int i=0;i<size;i++) {
-            ExplorationDroneDTO botDTO = getRandomExplorationDroneDTO();
+            ExplorationDroneResponseDTO botDTO = getRandomExplorationDroneDTO();
             var jsonString = objectMapper.writeValueAsString(botDTO);
             MvcResult result = mockMvc.perform(post("/explorationDrones")
                     .content(jsonString)
@@ -118,7 +118,7 @@ public class  E1ControllerTest {
     @Test
     public void postPatchGetTest() throws Exception{
 
-        ExplorationDroneDTO botDTO=getRandomExplorationDroneDTO();
+        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
         var jsonString = objectMapper.writeValueAsString(botDTO);
 
         //POST new Entity
@@ -131,9 +131,9 @@ public class  E1ControllerTest {
                 .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
         String content = result.getResponse().getContentAsString();
         String location = result.getResponse().getHeader("Location");
-        ExplorationDroneDTO resultDTO = objectMapper.readValue(content, ExplorationDroneDTO.class);
+        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
 
-        ExplorationDroneDTO newBotDTO=getRandomExplorationDroneDTO();
+        ExplorationDroneResponseDTO newBotDTO=getRandomExplorationDroneDTO();
         var newJsonString = objectMapper.writeValueAsString(newBotDTO);
 
         //PATCH the posted entity
@@ -159,7 +159,7 @@ public class  E1ControllerTest {
     @Test
     public void postDeleteGetTest() throws Exception{
 
-        ExplorationDroneDTO botDTO=getRandomExplorationDroneDTO();
+        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
         var jsonString = objectMapper.writeValueAsString(botDTO);
 
         //POST new Entity
@@ -172,7 +172,7 @@ public class  E1ControllerTest {
                 .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
         String content = result.getResponse().getContentAsString();
         String location = result.getResponse().getHeader("Location");
-        ExplorationDroneDTO resultDTO = objectMapper.readValue(content, ExplorationDroneDTO.class);
+        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
 
         //GET the Posted Entity
         mockMvc.perform(get(location)
@@ -205,7 +205,7 @@ public class  E1ControllerTest {
     @Transactional
     public void postCommandTest() throws Exception {
 
-        ExplorationDroneDTO botDTO=getRandomExplorationDroneDTO();
+        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
         var jsonString = objectMapper.writeValueAsString(botDTO);
 
         //POST new Entity
@@ -218,11 +218,11 @@ public class  E1ControllerTest {
                 .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
         String content = result.getResponse().getContentAsString();
         String location = result.getResponse().getHeader("Location");
-        ExplorationDroneDTO resultDTO = objectMapper.readValue(content, ExplorationDroneDTO.class);
+        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
 
         //Give Command to move north
         String direction="north";
-            CommandDTO commandDTO = new CommandDTO(direction, resultDTO.getId());
+            CommandRequestDto commandDTO = new CommandRequestDto(direction, resultDTO.getId());
             jsonString = objectMapper.writeValueAsString(commandDTO);
 
         List<Planet> planets = planetService.getAllPlanet();
@@ -249,7 +249,7 @@ public class  E1ControllerTest {
     @Transactional
     public void postGetCommandHistoryTest() throws Exception {
 
-        ExplorationDroneDTO botDTO=getRandomExplorationDroneDTO();
+        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
         var jsonString = objectMapper.writeValueAsString(botDTO);
 
         //POST new Entity
@@ -262,12 +262,12 @@ public class  E1ControllerTest {
                 .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
         String content = result.getResponse().getContentAsString();
         String location = result.getResponse().getHeader("Location");
-        ExplorationDroneDTO resultDTO = objectMapper.readValue(content, ExplorationDroneDTO.class);
+        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
 
         //Give 5 commands
         for (int i=0; i<5; i++) {
             String direction = i%2==0? "north" : "south";
-            CommandDTO commandDTO = new CommandDTO(direction, resultDTO.getId());
+            CommandRequestDto commandDTO = new CommandRequestDto(direction, resultDTO.getId());
             jsonString = objectMapper.writeValueAsString(commandDTO);
 
             mockMvc.perform(post(location + "/commands")
@@ -292,7 +292,7 @@ public class  E1ControllerTest {
     @Transactional
     public void clearCommandHistoryTest() throws Exception {
 
-        ExplorationDroneDTO botDTO=getRandomExplorationDroneDTO();
+        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
         var jsonString = objectMapper.writeValueAsString(botDTO);
 
         //POST new Entity
@@ -305,12 +305,12 @@ public class  E1ControllerTest {
                 .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
         String content = result.getResponse().getContentAsString();
         String location = result.getResponse().getHeader("Location");
-        ExplorationDroneDTO resultDTO = objectMapper.readValue(content, ExplorationDroneDTO.class);
+        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
 
         //Give 5 commands
         for (int i=0; i<5; i++) {
             String direction = i%2==0? "north" : "south";
-            CommandDTO commandDTO = new CommandDTO(direction, resultDTO.getId());
+            CommandRequestDto commandDTO = new CommandRequestDto(direction, resultDTO.getId());
             jsonString = objectMapper.writeValueAsString(commandDTO);
 
             mockMvc.perform(post("/explorationDrones/" + resultDTO.getId() + "/commands")

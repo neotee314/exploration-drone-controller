@@ -1,6 +1,6 @@
 package com.neotee.exploration_drone_controller.explorationdrone.domain;
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
 
 import java.util.Comparator;

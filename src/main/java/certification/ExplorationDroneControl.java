@@ -4,6 +4,7 @@ package certification;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.domainprimitives.Load;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 
 import java.util.List;
 import java.util.UUID;

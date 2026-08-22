@@ -2,14 +2,13 @@ package com.neotee.exploration_drone_controller.regressionTests;
 
 import com.neotee.exploration_drone_controller.ExplorationDroneControllerApplication;
 import certification.ExplorationDroneControl;
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.core.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertThrows;

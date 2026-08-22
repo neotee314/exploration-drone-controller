@@ -1,6 +1,6 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application;
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDrone;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDroneRepository;
 import lombok.RequiredArgsConstructor;

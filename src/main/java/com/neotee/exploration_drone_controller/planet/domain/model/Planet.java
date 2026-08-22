@@ -1,6 +1,6 @@
 package com.neotee.exploration_drone_controller.planet.domain.model;
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.CompassPoint;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
 import com.neotee.exploration_drone_controller.domainprimitives.PlanetType;

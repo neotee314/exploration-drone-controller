@@ -1,16 +1,14 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.service;
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.explorationdrone.application.mapper.ExplorationDroneMapper;
-import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandDTO;
-import com.neotee.exploration_drone_controller.explorationdrone.application.dto.DroneIdDTO;
-import com.neotee.exploration_drone_controller.explorationdrone.application.dto.ExplorationDroneDTO;
+import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandRequestDto;
+import com.neotee.exploration_drone_controller.explorationdrone.application.dto.ExplorationDroneResponseDTO;
 import com.neotee.exploration_drone_controller.explorationdrone.application.mapper.CommandMapper;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDrone;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDroneRepository;
-import com.neotee.exploration_drone_controller.planet.application.service.PlanetService;
-import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
+import com.neotee.exploration_drone_controller.planet.application.service.PlanetApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,59 +24,22 @@ public class ExplorationDroneApplicationService {
     private final ExplorationDroneRepository explorationDroneRepository;
     private final ExplorationDroneMapper droneMapper;
     private final CommandMapper commandMapper;
-    private final PlanetService planetService;
+    private final PlanetApplicationService planetService;
 
 
-    public ExplorationDroneDTO createFromDto(ExplorationDroneDTO request) {
-
-        Planet planet = planetService.getSpaceStation();
-
-        UUID planetId = request.getPlanetId();
-        Planet foundPlanet = planetService.findPlanetById(planetId);
-        if (foundPlanet == null && planet == null) {
-            planet = new Planet();
-        } else if (planetService.findPlanetById(planetId) != null) {
-            planet = planetService.findPlanetById(planetId);
-        }
-
-        planetService.save(planet);
-
-        UUID droneId = request.getId();
-        if (droneId == null) droneId = UUID.randomUUID();
-        request.setId(droneId);
-        ExplorationDrone explorationDrone = droneMapper.toEntity(request);
-        explorationDrone.setCommandHistory(new ArrayList<>());
-        explorationDroneRepository.save(explorationDrone);
-
-        planet.addDrone(explorationDrone);
-        planet.markPlanetVisited();
-
-        explorationDrone.setPlanet(planet);
-        explorationDroneRepository.save(explorationDrone);
-        planetService.save(planet);
-        return droneMapper.toDTO(explorationDrone);
-    }
-
-    @Transactional
-    public ExplorationDroneDTO sendCommand(UUID droneId, CommandDTO request) {
-        if (droneId == null || request == null) throw new ExplorationDroneControlException("droneId is null");
-        ExplorationDrone explorationDrone = explorationDroneRepository.findById(droneId)
-                .orElseThrow(() -> new ExplorationDroneControlException("Drone not found with id: " + droneId));
-        Command command = commandMapper.toEntity(request);
-        explorationDrone.sendCommand(command);
-        planetService.save(explorationDrone.getPlanet());
-        explorationDroneRepository.save(explorationDrone);
-        return droneMapper.toDTO(explorationDrone);
+    public ExplorationDrone sendCommand(ExplorationDrone drone, Command command) {
+        drone.sendCommand(command);
+        return explorationDroneRepository.save(drone);
     }
 
 
-    public ExplorationDroneDTO getDroneById(UUID droneId) {
+    public ExplorationDroneResponseDTO getDroneById(UUID droneId) {
         if (droneId == null) throw new ExplorationDroneControlException("DroneId is null");
         ExplorationDrone drone = explorationDroneRepository.findById(droneId).orElse(null);
         return droneMapper.toDTO(drone);
     }
 
-    public ExplorationDroneDTO changeDroneName(UUID droneId, String name) {
+    public ExplorationDroneResponseDTO changeDroneName(UUID droneId, String name) {
         if (droneId == null) throw new ExplorationDroneControlException("DroneId is null");
         ExplorationDrone explorationDrone = explorationDroneRepository.findById(droneId)
                 .orElseThrow(() -> new ExplorationDroneControlException("Drone not found with id: " + droneId));
@@ -88,7 +49,7 @@ public class ExplorationDroneApplicationService {
     }
 
 
-    public List<CommandDTO> getCommandHistory(UUID droneId) {
+    public List<CommandRequestDto> getCommandHistory(UUID droneId) {
         ExplorationDrone drone = explorationDroneRepository.findById(droneId)
                 .orElseThrow(() -> new ExplorationDroneControlException("Drone not found with id: " + droneId));
         return drone.getCommandHistory().stream().map(commandMapper::toDTO).toList();
@@ -102,34 +63,16 @@ public class ExplorationDroneApplicationService {
         explorationDroneRepository.save(drone);
     }
 
-    public List<ExplorationDroneDTO> getAllDrones() {
-        List<ExplorationDroneDTO> result = new ArrayList<>();
-        for (ExplorationDrone drone : explorationDroneRepository.findAll()) {
-            result.add(droneMapper.toDTO(drone));
-        }
+    public List<ExplorationDrone> getAllDrones() {
+        List<ExplorationDrone> result = new ArrayList<>();
+        explorationDroneRepository.findAll().forEach(result::add);
         return result;
     }
 
-
-    public void deleteDrone(UUID droneId) {
-        if (droneId == null) throw new ExplorationDroneControlException("DroneId is null");
-        explorationDroneRepository.deleteById(droneId);
-    }
-
-    public ExplorationDroneDTO spawn(DroneIdDTO droneIdDTO) {
+    public ExplorationDrone spawn() {
         UUID droneId = UUID.randomUUID();
-        if (droneIdDTO != null && droneIdDTO.getDroneId() != null) {
-            droneId = droneIdDTO.getDroneId();
-        }
-        Planet spaceSation = planetService.getSpaceStation();
-        if (spaceSation == null) throw new ExplorationDroneControlException("No space station");
-        ExplorationDrone drone = explorationDroneRepository.findById(droneId).orElse(null);
-        if (drone != null) throw new ExplorationDroneControlException("Drone already exists");
-        drone = new ExplorationDrone(droneId);
-        drone.setPlanet(spaceSation);
-        drone.setCommandHistory(new ArrayList<>());
-        explorationDroneRepository.save(drone);
-        spaceSation.addDrone(drone);
-        return droneMapper.toDTO(drone);
+        var spaceSation = planetService.getSpaceStation();
+        var drone = ExplorationDrone.of(spaceSation, droneId);
+        return explorationDroneRepository.save(drone);
     }
 }

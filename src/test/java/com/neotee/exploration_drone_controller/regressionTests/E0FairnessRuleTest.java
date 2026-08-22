@@ -2,7 +2,7 @@ package com.neotee.exploration_drone_controller.regressionTests;
 
 import com.neotee.exploration_drone_controller.ExplorationDroneControllerApplication;
 import certification.ExplorationDroneControl;
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.core.TestHelper;

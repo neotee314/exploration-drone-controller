@@ -12,9 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Getter
-public class ExplorationDroneDTO {
+public class ExplorationDroneResponseDTO {
     private String name;
     private UUID id;
     private UUID planetId;
-    private List<CommandDTO> commandHistory;
+    private List<CommandRequestDto> commandHistory;
 }

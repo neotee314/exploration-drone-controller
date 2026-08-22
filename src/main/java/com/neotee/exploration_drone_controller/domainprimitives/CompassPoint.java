@@ -1,8 +1,6 @@
 package com.neotee.exploration_drone_controller.domainprimitives;
 
-import certification.ExplorationDroneControlException;
-
-import java.util.Objects;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 
 
 public enum CompassPoint {

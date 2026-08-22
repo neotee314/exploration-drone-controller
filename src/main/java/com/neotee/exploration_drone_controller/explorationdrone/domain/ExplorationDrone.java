@@ -1,9 +1,8 @@
 package com.neotee.exploration_drone_controller.explorationdrone.domain;
 
-import certification.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
-import com.neotee.exploration_drone_controller.planet.domain.model.SpaceStation;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,14 +42,20 @@ public class ExplorationDrone {
     @CollectionTable
     private List<Command> commandHistory = new ArrayList<>();
 
-    public ExplorationDrone(UUID id) {
+    private ExplorationDrone(Planet planet, UUID id) {
         this.droneId = id;
+        this.planet = planet;
         this.name = generateCoolName();
         this.load = Load.fromCapacityAndFilling(20, Uranium.fromAmount(0));
-        this.planet = SpaceStation;
         this.transportState = NOT_TRANSPORTED;
         this.path = CompassPointPath.empty();
         this.commandHistory = new ArrayList<>();
+    }
+
+    public static ExplorationDrone of(Planet planet, UUID id) {
+        if (planet == null) throw new ExplorationDroneControlException("cannot create a Drone on nothing");
+        return new ExplorationDrone(planet, id);
+
     }
 
 

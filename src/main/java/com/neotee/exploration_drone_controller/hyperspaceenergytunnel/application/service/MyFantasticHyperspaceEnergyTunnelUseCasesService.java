@@ -3,7 +3,6 @@ package com.neotee.exploration_drone_controller.hyperspaceenergytunnel.applicati
 import certification.HyperspaceEnergyTunnelUseCases;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain.HyperspaceEnergyTunnelRepository;
 import com.neotee.exploration_drone_controller.planet.application.service.PlanetService;
-import com.neotee.exploration_drone_controller.planet.application.PlanetValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package com.neotee.exploration_drone_controller.planet.application.service;
 
 
 import com.neotee.exploration_drone_controller.domainprimitives.CompassPoint;
-import com.neotee.exploration_drone_controller.planet.application.PlanetValidator;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import com.neotee.exploration_drone_controller.planet.domain.repository.PlanetRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,20 +17,23 @@ public class NeighbourPlanetService {
 
     private final PlanetRepository planetRepository;
     private final NeighbourSearchService neighbourSearchService;
-    private final PlanetValidator planetValidator;
 
     @Transactional
     public void createNeighborOf(UUID planetId, UUID neighbourId, CompassPoint direction) {
-        var planet = planetValidator.validatePlanetExists(planetId);
+        if (planetId == null) throw new ExplorationDroneControlException("PlanetId is null");
+        var planet = planetRepository.findById(planetId).orElseThrow(() -> new ExplorationDroneControlException("Planet not found"));
         if (neighbourId == null) return;
-        Planet neighbour = planetValidator.findOrCreatePlanet(neighbourId);
+        var neighbour =  planetRepository.findById(planetId)
+                .orElseGet(() -> {
+                    var found = new Planet();
+                    found.setPlanetId(planetId);
+                    return found;
+                });
 
         neighbour = planetRepository.save(neighbour);
 
         planet.addNeighbour(neighbour, direction);
         neighbour.addNeighbour(planet, direction.oppositeDirection());
-
-
         neighbourSearchService.findAllNeighbors(neighbour);
         planetRepository.save(planet);
         planetRepository.save(neighbour);
