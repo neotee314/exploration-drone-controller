@@ -21,7 +21,7 @@ public class NeighbourPlanetService {
 
     @Transactional
     public void createNeighborOf(UUID planetId, UUID neighbourId, CompassPoint direction) {
-        Planet planet = planetValidator.validatePlanetExists(planetId);
+        var planet = planetValidator.validatePlanetExists(planetId);
         if (neighbourId == null) return;
         Planet neighbour = planetValidator.findOrCreatePlanet(neighbourId);
 

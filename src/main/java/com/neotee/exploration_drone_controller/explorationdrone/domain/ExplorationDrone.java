@@ -2,8 +2,8 @@ package com.neotee.exploration_drone_controller.explorationdrone.domain;
 
 import certification.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.*;
-import com.neotee.exploration_drone_controller.planet.domain.model.Drone;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
+import com.neotee.exploration_drone_controller.planet.domain.model.SpaceStation;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,24 @@ import static com.neotee.exploration_drone_controller.explorationdrone.domain.Tr
 @Setter
 @Entity
 @NoArgsConstructor
-public class ExplorationDrone extends Drone {
+public class ExplorationDrone {
+
+    @Id
+    protected UUID droneId;
+
+    protected String name;
+
+    @Embedded
+    protected CompassPointPath path = CompassPointPath.empty();
+
+    @ManyToOne
+    protected Planet planet;
+
+    @Enumerated(EnumType.STRING)
+    protected TransportState transportState = NOT_TRANSPORTED;
+
+    @Embedded
+    protected Load load = Load.fromCapacityAndFilling(20, Uranium.fromAmount(0));
 
     @ElementCollection
     @CollectionTable
@@ -30,15 +47,16 @@ public class ExplorationDrone extends Drone {
         this.droneId = id;
         this.name = generateCoolName();
         this.load = Load.fromCapacityAndFilling(20, Uranium.fromAmount(0));
+        this.planet = SpaceStation;
         this.transportState = NOT_TRANSPORTED;
         this.path = CompassPointPath.empty();
         this.commandHistory = new ArrayList<>();
     }
 
-    @Override
+
     public void move(CompassPoint movement) {
         if (movement == null) throw new ExplorationDroneControlException("invalid Data");
-        Planet movingPlanet = planet.getNeighbourOf(movement);
+        var movingPlanet = planet.getNeighbourOf(movement);
         if (movingPlanet == null) throw new ExplorationDroneControlException("No moving against block");
         this.planet.removeDrone(this);
         this.planet = movingPlanet;
@@ -47,7 +65,7 @@ public class ExplorationDrone extends Drone {
         this.path = this.path.addMovement(movement);
     }
 
-    @Override
+
     public void transport() {
         Planet exitPlanet = planet.getExistPlanet();
         this.planet.removeDrone(this);
@@ -56,7 +74,7 @@ public class ExplorationDrone extends Drone {
         this.transportState = TRANSPORTED;
     }
 
-    @Override
+
     public void gohome() {
         if (this.isTransported()) {
             throw new ExplorationDroneControlException("Drone is already transported");
@@ -83,7 +101,6 @@ public class ExplorationDrone extends Drone {
     }
 
 
-    @Override
     public void explore() {
         List<Planet> unvisitedNeighbours = planet.getUnvisitedNeighbours();
         List<Planet> visitedNeighbours = planet.getVisitedNeighbours();
@@ -120,17 +137,17 @@ public class ExplorationDrone extends Drone {
         return faker.name().firstName() + " " + faker.funnyName().name();
     }
 
-    @Override
+
     public void addToPlanet(Planet planet) {
         this.planet = planet;
     }
 
-    @Override
+
     public boolean isTransported() {
         return transportState == TRANSPORTED;
     }
 
-    @Override
+
     public void mine() {
         if (planet.isMined())
             throw new ExplorationDroneControlException("Planet is already mined");
@@ -146,7 +163,7 @@ public class ExplorationDrone extends Drone {
         planet.reduceUranium(mined);
     }
 
-    @Override
+
     public Uranium getUranium() {
         return this.getLoad().getUranium();
     }
@@ -171,14 +188,13 @@ public class ExplorationDrone extends Drone {
     }
 
 
-    @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ExplorationDrone drone = (ExplorationDrone) o;
         return Objects.equals(getDroneId(), drone.getDroneId());
     }
 
-    @Override
+
     public int hashCode() {
         return Objects.hashCode(getDroneId());
     }

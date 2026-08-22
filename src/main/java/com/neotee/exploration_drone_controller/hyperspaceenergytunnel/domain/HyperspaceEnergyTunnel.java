@@ -2,19 +2,26 @@ package com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain;
 
 import certification.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
-import com.neotee.exploration_drone_controller.planet.domain.model.Tunnel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class HyperspaceEnergyTunnel extends Tunnel {
+public class HyperspaceEnergyTunnel  {
+    @Id
+    protected UUID id;
 
+    @OneToOne
+    protected Planet entryPlanet;
 
+    @OneToOne
+    protected Planet exitPlanet;
 
     @Enumerated(EnumType.STRING)
     private TunnelState tunnelState;
@@ -33,7 +40,7 @@ public class HyperspaceEnergyTunnel extends Tunnel {
         this.exitPlanet = exitPlanet;
     }
 
-    @Override
+
     public void shutdown() {
         if (this.isInActive()) throw new ExplorationDroneControlException("Double shutdown is not possible");
         this.tunnelState = TunnelState.INACTIVE;
@@ -61,12 +68,12 @@ public class HyperspaceEnergyTunnel extends Tunnel {
         this.activate();
     }
 
-    @Override
+
     public Boolean isInActive() {
         return this.tunnelState == TunnelState.INACTIVE;
     }
 
-    @Override
+
     public Planet getExitPlanet() {
         return this.exitPlanet;
     }

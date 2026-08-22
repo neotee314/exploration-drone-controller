@@ -1,6 +1,5 @@
 package com.neotee.exploration_drone_controller.planet.application;
 
-import com.neotee.exploration_drone_controller.planet.domain.model.Tunnel;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

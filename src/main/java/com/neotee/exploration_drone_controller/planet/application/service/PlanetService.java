@@ -5,7 +5,6 @@ import certification.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.PlanetType;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
 import com.neotee.exploration_drone_controller.planet.application.PlanetValidator;
-import com.neotee.exploration_drone_controller.planet.domain.model.Drone;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import com.neotee.exploration_drone_controller.planet.domain.model.SpaceStation;
 import com.neotee.exploration_drone_controller.planet.domain.repository.PlanetRepository;

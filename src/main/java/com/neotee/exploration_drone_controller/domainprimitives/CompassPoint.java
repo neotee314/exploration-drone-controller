@@ -4,21 +4,13 @@ import certification.ExplorationDroneControlException;
 
 import java.util.Objects;
 
-/**
- * Domain Primitive representing the four cardinal compass directions.
- */
+
 public enum CompassPoint {
     NORTH, EAST, SOUTH, WEST;
 
-    /**
-     * Converts a direction string to a {@link CompassPoint} enum.
-     *
-     * @param directionString The direction in lowercase string format ("north", "east", etc.).
-     * @return The matching {@link CompassPoint}.
-     * @throws ExplorationDroneControlException if the input string is null or does not match any valid direction.
-     */
+
     public static CompassPoint fromString(String directionString) {
-        Objects.requireNonNull(directionString, "Direction string cannot be null");
+        if (directionString == null || directionString.isBlank()) throw new ExplorationDroneControlException("Direction cannot be null");
 
         return switch (directionString.toLowerCase()) {
             case "north" -> NORTH;
@@ -31,11 +23,7 @@ public enum CompassPoint {
         };
     }
 
-    /**
-     * Returns the opposite direction of the current compass point.
-     *
-     * @return The opposite {@link CompassPoint}.
-     */
+
     public CompassPoint oppositeDirection() {
         return switch (this) {
             case NORTH -> SOUTH;
@@ -45,11 +33,7 @@ public enum CompassPoint {
         };
     }
 
-    /**
-     * Converts this enum constant to its lowercase string representation.
-     *
-     * @return A lowercase string representing the direction, e.g., "north".
-     */
+
     @Override
     public String toString() {
         return name().toLowerCase();

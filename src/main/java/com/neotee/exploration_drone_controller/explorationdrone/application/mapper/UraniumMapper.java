@@ -2,22 +2,22 @@ package com.neotee.exploration_drone_controller.explorationdrone.application.map
 
 
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
-import com.neotee.exploration_drone_controller.planet.application.dto.UraniumDTO;
+import com.neotee.exploration_drone_controller.planet.application.dto.UraniumRequestDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface UraniumMapper {
 
 
-    default UraniumDTO toDTO(Uranium uranium) {
+    default UraniumRequestDto toDTO(Uranium uranium) {
         if (uranium == null) return null;
-        UraniumDTO dto = new UraniumDTO();
+        UraniumRequestDto dto = new UraniumRequestDto();
         dto.setAmount(uranium.getAmount());
         return dto;
     }
 
-    default Uranium toEntity(UraniumDTO uraniumDTO) {
-        if (uraniumDTO == null) return null;
-        return Uranium.fromAmount(uraniumDTO.getAmount());
+    default Uranium toEntity(UraniumRequestDto uraniumRequestDto) {
+        if (uraniumRequestDto == null) return null;
+        return Uranium.fromAmount(uraniumRequestDto.getAmount());
     }
 }

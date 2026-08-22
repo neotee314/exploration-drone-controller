@@ -26,12 +26,6 @@ public class Planet {
     @Id
     private UUID planetId;
 
-    @OneToMany
-    protected List<Drone> drones = new ArrayList<>();
-
-    @OneToOne(mappedBy = "entryPlanet")
-    protected Tunnel hyperTunnel;
-
     @OneToOne
     protected Planet north;
     @OneToOne
@@ -44,11 +38,11 @@ public class Planet {
     protected PlanetType planetType;
 
     @Embedded
-    protected Uranium uranium = Uranium.fromAmount(0);
+    protected Uranium uranium;
 
 
     @Enumerated(EnumType.STRING)
-    private PlanetVisitStatus visitStatus = NOT_VISITED;
+    private PlanetVisitStatus visitStatus;
 
 
     private boolean isMined;
@@ -56,14 +50,10 @@ public class Planet {
 
     public Planet() {
         this.planetId = UUID.randomUUID();
+        this.uranium = Uranium.fromAmount(0);
         setPlanetType(UNKNOWN);
-        this.isMined= false;
+        this.isMined = false;
         setVisitStatus(NOT_VISITED);
-    }
-
-    public boolean contains(Drone drone) {
-        if (drone == null) return false;
-        return drones.contains(drone);
     }
 
 
@@ -79,23 +69,7 @@ public class Planet {
         }
     }
 
-    public void removeDrone(Drone drone) {
-        if (drone == null) throw new ExplorationDroneControlException("Drone cannot be null");
-        drones.remove(drone);
-    }
-
-    public void addDrone(Drone drone) {
-        if (drone == null) throw new ExplorationDroneControlException("Drone cannot be null");
-        if (!this.isSpaceStation())
-            this.changeToRegular();
-        drone.addToPlanet(this);
-        this.setVisitStatus(VISITED);
-        drones.add(drone);
-    }
-
     public void addNeighbour(Planet neighbor, CompassPoint direction) {
-        if (neighbor == null || direction == null)
-            throw new ExplorationDroneControlException("Neighbour or Direction cannot be null");
         if (direction.equals(NORTH)) {
             this.setNorth(neighbor);
         } else if (direction.equals(SOUTH)) {
@@ -108,30 +82,16 @@ public class Planet {
     }
 
     public void addToUranium(Uranium addedUranium) {
+        if (isOrigin())
+            throw new ExplorationDroneControlException("Cannot add Uranium to space station");
+
         this.uranium = this.uranium.addTo(addedUranium);
-    }
-
-    public void addHyperTunnel(Tunnel tunnel) {
-        if (tunnel == null) throw new ExplorationDroneControlException("Tunnel cannot be null");
-        this.hyperTunnel = tunnel;
-    }
-
-    public boolean hasAlreadyHyperTunnel() {
-        return hyperTunnel != null;
-    }
-
-
-    public boolean isSpaceStation() {
-        return this.planetType.equals(SPACE_STATION);
-    }
-
-    public void changeToRegular() {
-        setPlanetType(PlanetType.REGULAR);
     }
 
 
     public void reduceUranium(Uranium mineQuantity) {
-        if (mineQuantity == null) throw new ExplorationDroneControlException("Uranium cannot be null");
+        if (isOrigin())
+            throw new ExplorationDroneControlException("Cannot reduce Uranium from space station");
         this.setUranium(mineQuantity.subtractFrom(uranium));
         this.setMined(true);
     }
@@ -144,14 +104,6 @@ public class Planet {
         this.setVisitStatus(VISITED);
     }
 
-    public List<Planet> getNeighbours() {
-        List<Planet> neighbours = new ArrayList<>();
-        if (this.north != null) neighbours.add(this.north);
-        if (this.south != null) neighbours.add(this.south);
-        if (this.east != null) neighbours.add(this.east);
-        if (this.west != null) neighbours.add(this.west);
-        return neighbours;
-    }
 
     public List<Planet> getUnvisitedNeighbours() {
         List<Planet> unvisited = new ArrayList<>();
@@ -172,47 +124,30 @@ public class Planet {
     }
 
 
-
     public Boolean isOrigin() {
         return this.planetType.equals(SPACE_STATION);
     }
 
 
-    public void removeHyperTunnel(Tunnel tunnel) {
-        if (tunnel == null) throw new ExplorationDroneControlException("Tunnel cannot be null");
-        if (this.hyperTunnel.equals(tunnel)) {
-            this.hyperTunnel = null;
-        } else {
-            throw new ExplorationDroneControlException("Tunnel is not on this planet");
-        }
-    }
-
     public CompassPoint getDirectionTo(Planet targetPlanet) {
-        if (targetPlanet == null) throw new ExplorationDroneControlException("Target planet cannot be null");
 
         if (this.equals(targetPlanet)) return null;
 
-        if (this.north != null && this.north.getPlanetId().equals(targetPlanet.getPlanetId())) {
+        if (this.north != null && this.north.equals(targetPlanet))
             return NORTH;
-        }
-        if (this.south != null && this.south.getPlanetId().equals(targetPlanet.getPlanetId())) {
+
+        if (this.south != null && this.south.equals(targetPlanet))
             return SOUTH;
-        }
-        if (this.east != null && this.east.getPlanetId().equals(targetPlanet.getPlanetId())) {
+
+        if (this.east != null && this.east.equals(targetPlanet))
             return EAST;
-        }
-        if (this.west != null && this.west.getPlanetId().equals(targetPlanet.getPlanetId())) {
+
+        if (this.west != null && this.west.equals(targetPlanet))
             return WEST;
-        }
+
         throw new ExplorationDroneControlException("Cannot determine direction to target planet");
     }
 
-    public Planet getExistPlanet() {
-        Tunnel tunnel = this.getHyperTunnel();
-        if (tunnel == null) throw new ExplorationDroneControlException("Planet has no HyperTunnel");
-        return tunnel.getExitPlanet();
-
-    }
 
     @Override
     public boolean equals(Object o) {

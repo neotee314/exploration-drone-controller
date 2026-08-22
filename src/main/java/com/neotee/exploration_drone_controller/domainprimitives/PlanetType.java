@@ -6,13 +6,9 @@ import lombok.Getter;
 public enum PlanetType {
     REGULAR("regular"),
     UNKNOWN("unknown"),
-    SPACE_STATION("space station"),
-    HABITABLE("habitable"),
-    EXPLORABLE("explorable");
+    SPACE_STATION("space station");
 
     private final String value;
-
-    // Constructor for enums that take a string value
     PlanetType(String value) {
         this.value = value;
     }

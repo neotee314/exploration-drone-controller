@@ -5,7 +5,7 @@ import certification.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.explorationdrone.application.DroneValidator;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDrone;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDroneRepository;
-import com.neotee.exploration_drone_controller.planet.domain.service.MiningPolicyService;
+import com.neotee.exploration_drone_controller.planet.application.service.MiningPolicyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,9 +1,9 @@
-package com.neotee.exploration_drone_controller.planet.domain.service;
+package com.neotee.exploration_drone_controller.planet.application.service;
 
 import certification.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.UraniumComparator;
-import com.neotee.exploration_drone_controller.planet.domain.model.Drone;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
+import com.neotee.exploration_drone_controller.planet.domain.service.MiningPolicyInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;
@@ -11,7 +11,7 @@ import java.util.Comparator;
 @Service
 @RequiredArgsConstructor
 public class MiningPolicyService implements MiningPolicyInterface {
-
+/***
     @Override
     public Boolean canMine(Planet planet, Drone drone) {
         if (planet == null || drone == null) throw new ExplorationDroneControlException("Planet or Drone is null");
@@ -20,5 +20,5 @@ public class MiningPolicyService implements MiningPolicyInterface {
             throw new ExplorationDroneControlException("Drone is not on this planet");
         drones.sort(Comparator.comparing(Drone::getUranium, new UraniumComparator()));
         return drones.getFirst().equals(drone);
-    }
+    }***/
 }

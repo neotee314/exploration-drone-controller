@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"anticorruption","certification"})
+@ComponentScan(basePackages = {"certification"})
 public class ExplorationDroneControllerApplication {
 
 	public static void main(String[] args) {

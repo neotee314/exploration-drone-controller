@@ -19,7 +19,6 @@ public class MyFantasticPlanetExamining implements PlanetExamining {
 
     @Override
     public void neighboursDetected(UUID planetId, UUID northNeighbourOrNull, UUID eastNeighbourOrNull, UUID southNeighbourOrNull, UUID westNeighbourOrNull) {
-        //create Planets
         neighbourPlanetService.createNeighborOf(planetId, northNeighbourOrNull, NORTH);
         neighbourPlanetService.createNeighborOf(planetId, eastNeighbourOrNull, EAST);
         neighbourPlanetService.createNeighborOf(planetId, southNeighbourOrNull, SOUTH);
