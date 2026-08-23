@@ -1,9 +1,9 @@
 package com.neotee.exploration_drone_controller.regressionTests;
 
 import com.neotee.exploration_drone_controller.ExplorationDroneControllerApplication;
-import certification.ExplorationDroneControl;
-import certification.ExplorationDroneControlException;
-import certification.PlanetExamining;
+import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.core.TestHelper;
 import guru.nidi.codeassert.config.AnalyzerConfig;

@@ -1,16 +1,15 @@
 package com.neotee.exploration_drone_controller.regressionTests;
 
 import com.neotee.exploration_drone_controller.ExplorationDroneControllerApplication;
-import certification.ExplorationDroneControl;
-import certification.ExplorationDroneControlException;
-import certification.PlanetExamining;
+import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.core.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.UUID;
 
@@ -85,7 +84,7 @@ public class E2NewCommandTests {
         // then --- must be back on space station
         planetId = explorationDroneControl.getExplorationDronePlanet(explorationDroneId);
 
-        assertEquals("space station", explorationDroneControl.getPlanetType(planetId));
+        assertEquals("SPACE_STATION", explorationDroneControl.getPlanetType(planetId));
     }
 
     @Test
@@ -111,7 +110,7 @@ public class E2NewCommandTests {
         // then
         UUID planetId = explorationDroneControl.getExplorationDronePlanet(explorationDroneId);
         String type = explorationDroneControl.getPlanetType(planetId);
-        assertEquals("space station", type);
+        assertEquals("SPACE_STATION", type);
     }
 
     @Test

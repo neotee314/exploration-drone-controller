@@ -1,15 +1,14 @@
 package com.neotee.exploration_drone_controller.regressionTests;
 
-import certification.ExplorationDroneControl;
-import certification.PlanetExamining;
+import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
+import com.neotee.exploration_drone_controller.certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.ExplorationDroneControllerApplication;
-import com.neotee.exploration_drone_controller.planet.application.PlanetService;
-import com.neotee.exploration_drone_controller.planet.domain.Planet;
+import com.neotee.exploration_drone_controller.domainprimitives.PlanetId;
+import com.neotee.exploration_drone_controller.planet.application.service.PlanetApplicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.UUID;
 
@@ -24,7 +23,7 @@ public class E0ComplicatedMapTests {
     @Autowired
     private ExplorationDroneControl explorationDroneControl;
     @Autowired
-    private PlanetService planetService;
+    private PlanetApplicationService planetService;
 
     @BeforeEach
     void setUp() {
@@ -70,7 +69,7 @@ public class E0ComplicatedMapTests {
             }
         }
 
-        Planet spaceStation = planetService.findPlanetById(spaceStationId);
+        var spaceStation = planetService.findPlanetById(PlanetId.of(spaceStationId));
 
         assertNotNull(spaceStation.getNeighbourOf(NORTH), "SpaceStation should have a north neighbour");
     }

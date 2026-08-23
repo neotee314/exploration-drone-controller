@@ -2,9 +2,9 @@ package com.neotee.exploration_drone_controller.core;
 
 
 
-import certification.ExplorationDroneControl;
-import certification.ExplorationDroneControlException;
-import certification.PlanetExamining;
+import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
+import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.domainprimitives.*;
 
 import java.util.UUID;
