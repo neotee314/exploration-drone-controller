@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/exploration-drones")
+@RequestMapping("/api/v1/explorationDrones")
 @RequiredArgsConstructor
 public class ExplorationDroneController {
 

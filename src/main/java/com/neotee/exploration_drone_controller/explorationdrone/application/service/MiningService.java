@@ -5,7 +5,6 @@ import com.neotee.exploration_drone_controller.exceptions.DomainValidationExcept
 
 import com.neotee.exploration_drone_controller.explorationdrone.domain.model.ExplorationDrone;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.repository.ExplorationDroneRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class MiningService {
 
     public Boolean canMine(ExplorationDrone explorationDrone) {
         var drones = explorationDroneRepository.findAll();
-        var dronesOnPlanet = new ArrayList<>(drones.stream().filter(drone -> drone.getPlanet().equals(explorationDrone.getPlanet())).toList());
+        var dronesOnPlanet = new ArrayList<>(drones.stream().filter(drone -> drone.getPlanetId().equals(explorationDrone.getPlanetId())).toList());
         dronesOnPlanet.sort(Comparator.comparing(ExplorationDrone::getUranium, new UraniumComparator()));
         return dronesOnPlanet.getFirst().equals(explorationDrone);
     }

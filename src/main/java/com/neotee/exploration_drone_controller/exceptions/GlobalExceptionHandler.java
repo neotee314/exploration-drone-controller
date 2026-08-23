@@ -2,6 +2,7 @@ package com.neotee.exploration_drone_controller.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,14 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(DroneNotFoundException.class)
+    public ProblemDetail handleDroneNotFound(
+            DroneNotFoundException ex) {
+
+        var problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problem.setDetail(ex.getMessage());
+        return problem;
+    }
 
     @ExceptionHandler({RequestValidationException.class, HandlerMethodValidationException.class})
     public ProblemDetail handleBadRequest(Exception ex) {

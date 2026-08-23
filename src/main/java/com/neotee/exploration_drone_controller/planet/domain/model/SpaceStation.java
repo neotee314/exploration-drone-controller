@@ -21,7 +21,7 @@ public class SpaceStation extends Planet {
     private SpaceStation(PlanetId planetId) {
         super(planetId);
         setName("space station");
-        setPlanetType(SPACE_STATION);
+        changePlanetTypeTo(SPACE_STATION);
     }
 
     public static SpaceStation create() {

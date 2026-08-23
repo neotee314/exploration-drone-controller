@@ -21,11 +21,13 @@ import static com.neotee.exploration_drone_controller.domainprimitives.Transport
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
 
     @ManyToOne
     private Planet planet;
 
+    @Getter
     private String name;
 
     @Embedded
@@ -35,6 +37,7 @@ public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
     private TransportState transportState;
 
     @Embedded
+    @Getter
     private Load load;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -154,6 +157,10 @@ public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
         this.name = name;
     }
 
+    public void clearCommandHistory() {
+        commandHistory.clear();
+    }
+
     public void addCommand(Command command) {
         if (command == null)
             throw new DomainValidationException("ExplorationDrone", "Command must not be null");
@@ -185,5 +192,13 @@ public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public Boolean isPlanetIdEquals(PlanetId planetId) {
+        return this.planet.getId() == planetId;
+    }
+
+    public PlanetId getPlanetId() {
+        return this.planet.getId();
     }
 }
