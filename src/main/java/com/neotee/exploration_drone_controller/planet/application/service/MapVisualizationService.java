@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.neotee.exploration_drone_controller.domainprimitives.CompassPoint.*;
-
 @Service
 @RequiredArgsConstructor
 public class MapVisualizationService {
@@ -324,7 +322,7 @@ public class MapVisualizationService {
                     planet.isVisited(),
                     centerX,
                     y + 124,
-                    planet.checkIfMined()
+                    planet.checkDoubleMine()
             ));
         }
     }

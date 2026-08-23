@@ -57,9 +57,9 @@ public class E0CompatibilityMovementTests {
         UUID planetId11 = testHelper.getPlanetId( 11 );
 
         // then
-        assertEquals( "regular", explorationDroneControl.getPlanetType( planetId ) );
-        assertEquals( "unknown", explorationDroneControl.getPlanetType( planetId6 ) );
-        assertEquals( "unknown", explorationDroneControl.getPlanetType( planetId11 ) );
+        assertEquals( "REGULAR", explorationDroneControl.getPlanetType( planetId ) );
+        assertEquals( "UNKNOWN", explorationDroneControl.getPlanetType( planetId6 ) );
+        assertEquals( "UNKNOWN", explorationDroneControl.getPlanetType( planetId11 ) );
 
 
     }

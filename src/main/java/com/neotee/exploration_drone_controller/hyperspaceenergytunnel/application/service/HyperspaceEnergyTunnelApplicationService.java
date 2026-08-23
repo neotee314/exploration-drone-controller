@@ -20,6 +20,9 @@ public class HyperspaceEnergyTunnelApplicationService {
 
     public HyperspaceEnergyTunnel install(PlanetId entryPlanetId, PlanetId exitPlanetId) {
         var entryPlanet = planetFinder.findPlanetById(entryPlanetId);
+        if (tunnelRepository.existsByEntryPlanet(entryPlanet)) {
+            throw new DomainValidationException("HyperspaceEnergyTunnel", "A hyperspace energy tunnel already starts at this planet");
+        }
         var exitPlanet = planetFinder.findPlanetById(exitPlanetId);
         var tunnel = HyperspaceEnergyTunnel.install(entryPlanet, exitPlanet);
         return tunnelRepository.save(tunnel);
@@ -33,6 +36,11 @@ public class HyperspaceEnergyTunnelApplicationService {
 
     public HyperspaceEnergyTunnel relocate(HyperspaceEnergyTunnelId tunnelId, PlanetId entryPlanetId, PlanetId exitPlanetId) {
         var tunnel = findById(tunnelId);
+        if (tunnel.isInActive())
+            throw new DomainValidationException("HyperspaceEnergyTunnelApplicationService", "Validation erro for shutdown relocation");
+        if (entryPlanetId.equals(exitPlanetId))
+            throw new DomainValidationException("HyperspaceEnergyTunnelApplicationService", "Entry and exit planet must be different");
+
         var entryPlanet = planetFinder.findPlanetById(entryPlanetId);
         var exitPlanet = planetFinder.findPlanetById(exitPlanetId);
         tunnel.relocate(entryPlanet, exitPlanet);

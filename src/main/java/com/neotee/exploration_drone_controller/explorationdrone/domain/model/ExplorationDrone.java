@@ -3,7 +3,6 @@ package com.neotee.exploration_drone_controller.explorationdrone.domain.model;
 import com.neotee.exploration_drone_controller.core.AggregateRoot;
 import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
-import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -38,7 +37,7 @@ public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
     @Embedded
     private Load load;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable
     private List<Command> commandHistory;
 
@@ -57,64 +56,46 @@ public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
     }
 
     public static ExplorationDrone create(Planet planet, ExplorationDroneId id) {
-        if (id == null) {
-            throw new ExplorationDroneControlException(
-                    "Drone id must not be null"
-            );
-        }
-
         return new ExplorationDrone(planet, id);
     }
 
     public void move(CompassPoint direction) {
         var targetPlanet = planet.getNeighbourOf(direction);
 
-        if (targetPlanet == null) {
-            throw new ExplorationDroneControlException(
-                    "No planet in this direction"
-            );
-        }
+        if (targetPlanet == null)
+            throw new DomainValidationException("ExplorationDrone", "No planet in this direction");
 
         this.planet = targetPlanet;
         targetPlanet.markPlanetVisited();
+
+        if (!targetPlanet.isOrigin()) {
+            targetPlanet.markPlanetRegular();
+        }
+
         this.path = path.addMovement(direction);
     }
 
     public void transport(Planet exitPlanet) {
-        if (exitPlanet == null) {
-            throw new ExplorationDroneControlException(
-                    "Exit planet must not be null"
-            );
-        }
+        if (exitPlanet == null)
+            throw new DomainValidationException("ExplorationDrone", "Exit planet must not be null");
 
         this.planet = exitPlanet;
         this.transportState = TRANSPORTED;
     }
 
     public void gohome() {
-        if (isTransported()) {
-            throw new DomainValidationException(
-                    "Drone",
-                    "is already transported"
-            );
-        }
+        if (isTransported())
+            throw new DomainValidationException("ExplorationDrone", "is already transported");
 
         var direction = path.directionToGoBackTo();
 
-        if (direction == null) {
-            throw new DomainValidationException(
-                    "Drone",
-                    "No direction available to go home."
-            );
-        }
+        if (direction == null)
+            throw new DomainValidationException("ExplorationDrone", "No direction available to go home.");
 
         var targetPlanet = planet.getNeighbourOf(direction);
 
-        if (targetPlanet == null) {
-            throw new ExplorationDroneControlException(
-                    "No planet in this direction"
-            );
-        }
+        if (targetPlanet == null)
+            throw new DomainValidationException("ExplorationDrone", "No planet in this direction");
 
         this.planet = targetPlanet;
         targetPlanet.markPlanetVisited();
@@ -129,43 +110,25 @@ public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
                 ? unvisitedNeighbours
                 : visitedNeighbours;
 
-        if (options.isEmpty()) {
-            throw new DomainValidationException(
-                    "Drone",
-                    "All surrounding planets are inaccessible."
-            );
-        }
+        if (options.isEmpty())
+            throw new DomainValidationException("ExplorationDrone", "All surrounding planets are inaccessible.");
 
-        var targetPlanet = options.get(
-                new Random().nextInt(options.size())
-        );
+        var targetPlanet = options.get(new Random().nextInt(options.size()));
 
         var direction = planet.getDirectionTo(targetPlanet);
 
-        if (direction == null) {
-            throw new DomainValidationException(
-                    "Drone",
-                    "Direction to target planet could not be determined."
-            );
-        }
+        if (direction == null)
+            throw new DomainValidationException("ExplorationDrone", "Direction to target planet could not be determined.");
 
         move(direction);
     }
 
     public void mine() {
-        if (planet.checkIfMined()) {
-            throw new DomainValidationException(
-                    "Drone",
-                    "Planet is already mined"
-            );
-        }
+        if (planet.checkDoubleMine())
+            throw new DomainValidationException("ExplorationDrone", "Planet is already mined");
 
-        if (planet.isOrigin()) {
-            throw new DomainValidationException(
-                    "Drone",
-                    "Mining on the origin planet is not allowed"
-            );
-        }
+        if (planet.isOrigin())
+            throw new DomainValidationException("ExplorationDrone", "Mining on the origin planet is not allowed");
 
         var available = planet.getUranium();
         var excess = load.leaveBehindWhenFillingFrom(available);
@@ -185,22 +148,15 @@ public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
     }
 
     public void changeName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new DomainValidationException(
-                    "Drone",
-                    "Name must not be null or blank"
-            );
-        }
+        if (name == null || name.isBlank())
+            throw new DomainValidationException("ExplorationDrone", "Name must not be null or blank");
 
         this.name = name;
     }
 
     public void addCommand(Command command) {
-        if (command == null) {
-            throw new ExplorationDroneControlException(
-                    "Command must not be null"
-            );
-        }
+        if (command == null)
+            throw new DomainValidationException("ExplorationDrone", "Command must not be null");
 
         commandHistory.add(command);
     }
@@ -216,13 +172,11 @@ public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
+        if (this == o)
             return true;
-        }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
 
         ExplorationDrone drone = (ExplorationDrone) o;
         return Objects.equals(id, drone.id);

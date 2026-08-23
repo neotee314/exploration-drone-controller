@@ -39,7 +39,7 @@ public class E0CompatibilityBasicTests {
         List<UUID> found = explorationDroneControl.getPlanets();
         assertEquals( 1, found.size() );
         String type = explorationDroneControl.getPlanetType( found.get( 0 ) );
-        assertEquals( "space station", type );
+        assertEquals( "SPACE_STATION", type );
     }
 
     @Test

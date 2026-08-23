@@ -17,10 +17,10 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HyperspaceEnergyTunnel extends AggregateRoot<HyperspaceEnergyTunnelId> {
 
-    @OneToOne
+    @ManyToOne
     protected Planet entryPlanet;
 
-    @OneToOne
+    @ManyToOne
     protected Planet exitPlanet;
 
     @Enumerated(EnumType.STRING)
@@ -28,6 +28,8 @@ public class HyperspaceEnergyTunnel extends AggregateRoot<HyperspaceEnergyTunnel
 
     private HyperspaceEnergyTunnel(Planet entryPlanet, Planet exitPlanet) {
         this.id = HyperspaceEnergyTunnelId.newId();
+        this.entryPlanet = entryPlanet;
+        this.exitPlanet = exitPlanet;
         this.activate();
 
     }

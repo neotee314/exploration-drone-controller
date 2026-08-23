@@ -10,13 +10,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class HyperspaceEnergyTunnelService implements HyperspaceTunnelExitFinder {
+public class HyperspaceEnergyTunnelExitFinderService
+        implements HyperspaceTunnelExitFinder {
 
     private final HyperspaceEnergyTunnelRepository hyperspaceEnergyTunnelRepository;
 
     @Override
     public Planet findByEntryPlanet(Planet entryPlanet) {
         return hyperspaceEnergyTunnelRepository.findByEntryPlanet(entryPlanet)
+                .map(tunnel -> tunnel.getExitPlanet())
                 .orElseThrow(() -> new DomainValidationException("HyperSpaceEnergyTunnel", "No hyperspace tunnel on this planet"));
     }
 }

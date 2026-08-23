@@ -2,9 +2,11 @@ package com.neotee.exploration_drone_controller.anticorruption;
 
 import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
 import com.neotee.exploration_drone_controller.domainprimitives.*;
+import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
 import com.neotee.exploration_drone_controller.explorationdrone.application.service.ExplorationDroneApplicationService;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.service.HyperspaceEnergyTunnelApplicationService;
 import com.neotee.exploration_drone_controller.planet.application.service.PlanetApplicationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MyFantasticExplorationDroneControl implements ExplorationDroneControl {
     private final ExplorationDroneApplicationService explorationDroneApplicationService;
     private final PlanetApplicationService planetService;
@@ -20,6 +23,7 @@ public class MyFantasticExplorationDroneControl implements ExplorationDroneContr
 
     @Override
     public void executeCommand(Command command) {
+        if (command==null) throw new DomainValidationException("MyFantasticExplorationDroneControl","command cannot be null");
         explorationDroneApplicationService.sendCommand(command);
 
     }

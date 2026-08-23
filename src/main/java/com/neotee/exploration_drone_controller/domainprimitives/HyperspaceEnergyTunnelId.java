@@ -4,11 +4,8 @@ import com.neotee.exploration_drone_controller.exceptions.DomainValidationExcept
 import jakarta.persistence.Embeddable;
 
 import java.util.UUID;
-
 @Embeddable
 public class HyperspaceEnergyTunnelId extends GenericId {
-
-    protected UUID id;
 
     protected HyperspaceEnergyTunnelId() {
     }

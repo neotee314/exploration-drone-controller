@@ -4,6 +4,7 @@ import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.model.ExplorationDrone;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.repository.ExplorationDroneRepository;
+import com.neotee.exploration_drone_controller.planet.application.service.DroneDeletionService;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class ExplorationDroneApplicationService {
         var droneId = ExplorationDroneId.of(droneUuid);
         if (command.isSpawn())
             return spawnService.spawnById(droneId);
-        var drone = explorationDroneRepository.findById(droneId).orElseThrow(() -> new DomainValidationException("Drone", "Drone does not exist"));
+        var drone = explorationDroneRepository.findById(droneId).orElseThrow(() -> new DomainValidationException("ExplorationDroneApplicationService", "Drone does not exist"));
         if (command.isMove()) {
             movementService.move(drone, command.getMoveDirection());
         } else if (command.isExplore()) {
@@ -37,14 +38,16 @@ public class ExplorationDroneApplicationService {
             movementService.transport(drone);
         } else if (command.isMine()) {
             miningService.mine(drone);
-
         }
+
+        drone.addCommand(command);
+
         return explorationDroneRepository.save(drone);
     }
 
     public ExplorationDrone findById(ExplorationDroneId id) {
         return explorationDroneRepository.findById(id)
-                .orElseThrow(() -> new DomainValidationException("Drone", "Drone not found with id: " + id));
+                .orElseThrow(() -> new DomainValidationException("ExplorationDroneApplicationService", "Drone not found with id: " + id));
     }
 
 
@@ -89,4 +92,5 @@ public class ExplorationDroneApplicationService {
     public void delete(ExplorationDroneId id) {
         explorationDroneRepository.deleteById(id);
     }
+
 }

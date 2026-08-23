@@ -5,7 +5,9 @@ import com.neotee.exploration_drone_controller.domainprimitives.PlanetId;
 import com.neotee.exploration_drone_controller.domainprimitives.PlanetType;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
+import com.neotee.exploration_drone_controller.explorationdrone.application.service.MinedPlanetSaver;
 import com.neotee.exploration_drone_controller.explorationdrone.application.service.SpaceStationFinder;
+import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.service.HyperspaceEnergyTunnelDeletionService;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.service.PlanetFinderInterface;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import com.neotee.exploration_drone_controller.planet.domain.model.SpaceStation;
@@ -15,16 +17,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.neotee.exploration_drone_controller.domainprimitives.PlanetType.SPACE_STATION;
 import static com.neotee.exploration_drone_controller.domainprimitives.PlanetType.UNKNOWN;
 
 @Service
 @RequiredArgsConstructor
-public class PlanetApplicationService implements PlanetFinderInterface, SpaceStationFinder {
+public class PlanetApplicationService implements PlanetFinderInterface, SpaceStationFinder{
 
     private final PlanetRepository planetRepository;
     private final NeighbourSearchService neighbourSearchService;
+    private final DroneDeletionService droneDeletionService;
+    private final HyperspaceEnergyTunnelDeletionService hyperspaceEnergyTunnelDeletionService;
 
     public Planet createPlanet() {
         var planet = Planet.create();
@@ -64,14 +69,27 @@ public class PlanetApplicationService implements PlanetFinderInterface, SpaceSta
         return findPlanetById(planetId).getUranium();
     }
 
+
     @Transactional
     public Planet resetAll() {
 
-        var spaceStation = planetRepository.findFirstByPlanetType(SPACE_STATION).orElse(null);
+        var spaceStation = planetRepository
+                .findFirstByPlanetType(SPACE_STATION)
+                .orElse(null);
+
+        var planets = planetRepository.findAll();
+
+        planets.forEach(hyperspaceEnergyTunnelDeletionService::deleteByPlanet);
+        planets.forEach(droneDeletionService::deleteByPlanet);
+
         if (spaceStation == null) {
             planetRepository.deleteAll();
-            return null;
+
+            var newSpaceStation = SpaceStation.create();
+            return planetRepository.save(newSpaceStation);
         }
+
+        spaceStation.removeNeighbours();
         planetRepository.deleteByPlanetTypeNot(SPACE_STATION);
 
         return spaceStation;
@@ -99,4 +117,5 @@ public class PlanetApplicationService implements PlanetFinderInterface, SpaceSta
     public Planet getSpaceStation() {
         return planetRepository.findByPlanetType(SPACE_STATION).orElseThrow(() -> new DomainValidationException("SpaceStation", "Space station not found"));
     }
+
 }

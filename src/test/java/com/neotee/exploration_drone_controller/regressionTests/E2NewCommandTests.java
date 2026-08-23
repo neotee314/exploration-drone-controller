@@ -84,7 +84,7 @@ public class E2NewCommandTests {
         // then --- must be back on space station
         planetId = explorationDroneControl.getExplorationDronePlanet(explorationDroneId);
 
-        assertEquals("space station", explorationDroneControl.getPlanetType(planetId));
+        assertEquals("SPACE_STATION", explorationDroneControl.getPlanetType(planetId));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class E2NewCommandTests {
         // then
         UUID planetId = explorationDroneControl.getExplorationDronePlanet(explorationDroneId);
         String type = explorationDroneControl.getPlanetType(planetId);
-        assertEquals("space station", type);
+        assertEquals("SPACE_STATION", type);
     }
 
     @Test

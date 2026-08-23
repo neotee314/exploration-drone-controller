@@ -9,9 +9,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface HyperspaceEnergyTunnelRepository extends CrudRepository<HyperspaceEnergyTunnel, HyperspaceEnergyTunnelId> {
+public interface HyperspaceEnergyTunnelRepository
+        extends CrudRepository<HyperspaceEnergyTunnel, HyperspaceEnergyTunnelId> {
+
     @Override
     List<HyperspaceEnergyTunnel> findAll();
 
-    Optional<Planet> findByEntryPlanet(Planet entryPlanet);
+    Optional<HyperspaceEnergyTunnel> findByEntryPlanet(Planet entryPlanet);
+
+    boolean existsByEntryPlanet(Planet entryPlanet);
+
+    void deleteByEntryPlanet(Planet planet);
+
+    void deleteByExitPlanet(Planet planet);
 }

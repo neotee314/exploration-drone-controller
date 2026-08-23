@@ -2,6 +2,7 @@ package com.neotee.exploration_drone_controller.explorationdrone.domain.reposito
 
 import com.neotee.exploration_drone_controller.domainprimitives.ExplorationDroneId;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.model.ExplorationDrone;
+import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +13,6 @@ import java.util.UUID;
 public interface ExplorationDroneRepository extends CrudRepository<ExplorationDrone, ExplorationDroneId> {
 
     List<ExplorationDrone> findAll();
+
+    void deleteByPlanet(Planet planet);
 }

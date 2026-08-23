@@ -26,19 +26,19 @@ public class Planet extends AggregateRoot<PlanetId> {
 
     protected String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "north_planet_id")
     protected Planet north;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "south_planet_id")
     protected Planet south;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "west_planet_id")
     protected Planet west;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "east_planet_id")
     protected Planet east;
 
@@ -46,8 +46,6 @@ public class Planet extends AggregateRoot<PlanetId> {
 
     @Embedded
     protected Uranium uranium;
-
-
 
 
     @Enumerated(EnumType.STRING)
@@ -178,10 +176,22 @@ public class Planet extends AggregateRoot<PlanetId> {
         throw new ExplorationDroneControlException("Cannot determine direction to target planet");
     }
 
+    public void removeNeighbours() {
+        this.north = null;
+        this.south = null;
+        this.east = null;
+        this.west = null;
+    }
 
-    public Boolean checkIfMined() {
+
+    public Boolean checkDoubleMine() {
         return isMined;
     }
+
+    public void markPlanetRegular() {
+        this.setPlanetType(PlanetType.REGULAR);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -193,5 +203,6 @@ public class Planet extends AggregateRoot<PlanetId> {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
+
 
 }

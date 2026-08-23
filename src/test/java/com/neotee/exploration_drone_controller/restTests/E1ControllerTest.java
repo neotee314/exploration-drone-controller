@@ -1,348 +1,380 @@
 package com.neotee.exploration_drone_controller.restTests;
 
-
 import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
 import com.neotee.exploration_drone_controller.certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandRequestDto;
 import com.neotee.exploration_drone_controller.explorationdrone.application.dto.ExplorationDroneResponseDTO;
-import com.neotee.exploration_drone_controller.explorationdrone.application.service.SpawnService;
-import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
 
-import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class  E1ControllerTest {
+public class E1ControllerTest {
 
     private UUID originId;
+
     private static final UUID northernNeighbour = UUID.randomUUID();
 
     @Autowired
     private ExplorationDroneControl explorationDroneControl;
 
     @Autowired
-    private MockMvc mockMvc;
+    private PlanetExamining planetExamining;
 
     @Autowired
-    private PlanetExamining planetExamining;
+    private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         originId = explorationDroneControl.resetAll();
-        planetExamining.neighboursDetected(originId, northernNeighbour, null, null, null);
+
+        planetExamining.neighboursDetected(
+                originId,
+                northernNeighbour,
+                null,
+                null,
+                null
+        );
     }
 
-    private ExplorationDroneResponseDTO getRandomExplorationDroneDTO(){
-        int generation=new Random().nextInt(117);
-        String name = "Herbert der "+generation+".";
-        ExplorationDroneResponseDTO botDTO=new ExplorationDroneResponseDTO(name, null, null, null);
-        return botDTO;
-    }
-
-    @Transactional
+    /**
+     * Spawn a drone and then GET it.
+     */
     @Test
-    public void postAndGetTest() throws Exception{
+    @Transactional
+    void spawnAndGetTest() throws Exception {
 
-        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
-        var jsonString = objectMapper.writeValueAsString(botDTO);
-
-        //POST new Entity
-        MvcResult result = mockMvc.perform(post("/explorationDrones")
-                        .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
-        String content = result.getResponse().getContentAsString();
-        String location = result.getResponse().getHeader("Location");
-        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
-
-        //GET the Posted Entity using the location-Header
-        mockMvc.perform(get(location)
-                        .accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(
+                        post("/api/v1/exploration-drones/spawn")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", Matchers.is(resultDTO.getId().toString())))
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName())));
+                .andReturn();
 
+        String content = result.getResponse().getContentAsString();
+
+        ExplorationDroneResponseDTO drone =
+                objectMapper.readValue(
+                        content,
+                        ExplorationDroneResponseDTO.class
+                );
+
+        UUID droneId = drone.getId();
+
+        mockMvc.perform(
+                        get("/api/v1/exploration-drones/" + droneId)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(
+                        jsonPath("$.id",
+                                Matchers.is(droneId.toString()))
+                );
     }
 
-    @Transactional
+    /**
+     * Spawn five drones and check GET all.
+     */
     @Test
-    public void postAndGetAllTest() throws Exception{
-        int size=5;
-        //POST 5 new Entities
-        for(int i=0;i<size;i++) {
-            ExplorationDroneResponseDTO botDTO = getRandomExplorationDroneDTO();
-            var jsonString = objectMapper.writeValueAsString(botDTO);
-            MvcResult result = mockMvc.perform(post("/explorationDrones")
-                            .content(jsonString)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON))
+    @Transactional
+    void spawnAndGetAllTest() throws Exception {
+
+        int size = 5;
+
+        for (int i = 0; i < size; i++) {
+            mockMvc.perform(
+                            post("/api/v1/exploration-drones/spawn")
+                                    .accept(MediaType.APPLICATION_JSON)
+                    )
                     .andDo(print())
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id",
+                            Matchers.notNullValue()));
         }
-        //GET all Entites
-        mockMvc.perform(get("/explorationDrones")
-                        .accept(MediaType.APPLICATION_JSON))
+
+        mockMvc.perform(
+                        get("/api/v1/exploration-drones")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", Matchers.is(size)));
+                .andExpect(
+                        jsonPath("$.size()", Matchers.is(size))
+                );
     }
 
-    @Transactional
+    /**
+     * Spawn a drone and delete it.
+     */
     @Test
-    public void postPatchGetTest() throws Exception{
-
-        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
-        var jsonString = objectMapper.writeValueAsString(botDTO);
-
-        //POST new Entity
-        MvcResult result = mockMvc.perform(post("/explorationDrones")
-                        .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
-        String content = result.getResponse().getContentAsString();
-        String location = result.getResponse().getHeader("Location");
-        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
-
-        ExplorationDroneResponseDTO newBotDTO=getRandomExplorationDroneDTO();
-        var newJsonString = objectMapper.writeValueAsString(newBotDTO);
-
-        //PATCH the posted entity
-        mockMvc.perform(patch(location)
-                        .content(newJsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", Matchers.is(newBotDTO.getName()))).andReturn();
-
-        //GET the Patched Entity
-        mockMvc.perform(get(location)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", Matchers.is(resultDTO.getId().toString())))
-                .andExpect(jsonPath("$.name", Matchers.is(newBotDTO.getName())));
-
-    }
-
     @Transactional
-    @Test
-    public void postDeleteGetTest() throws Exception{
+    void spawnDeleteGetTest() throws Exception {
 
-        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
-        var jsonString = objectMapper.writeValueAsString(botDTO);
-
-        //POST new Entity
-        MvcResult result = mockMvc.perform(post("/explorationDrones")
-                        .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
-        String content = result.getResponse().getContentAsString();
-        String location = result.getResponse().getHeader("Location");
-        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
-
-        //GET the Posted Entity
-        mockMvc.perform(get(location)
-                        .accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(
+                        post("/api/v1/exploration-drones/spawn")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", Matchers.is(resultDTO.getId().toString())))
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName())));
+                .andReturn();
 
-        //DELETE the Posted Entity
-        mockMvc.perform(delete(location)
-                        .accept(MediaType.APPLICATION_JSON))
+        ExplorationDroneResponseDTO drone =
+                objectMapper.readValue(
+                        result.getResponse().getContentAsString(),
+                        ExplorationDroneResponseDTO.class
+                );
+
+        String droneUrl =
+                "/api/v1/exploration-drones/" + drone.getId();
+
+        // GET
+        mockMvc.perform(
+                        get(droneUrl)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id",
+                        Matchers.is(drone.getId().toString())));
+
+        // DELETE
+        mockMvc.perform(
+                        delete(droneUrl)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        //Try to GET the deleted Entity
-        mockMvc.perform(get(location)
-                        .accept(MediaType.APPLICATION_JSON))
+        // GET after DELETE
+        mockMvc.perform(
+                        get(droneUrl)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isNotFound());
-
     }
 
-    @Autowired
-    private PlanetService planetService;
-    @Autowired
-    private SpawnService explorationDroneService;
-
+    /**
+     * Spawn a drone and send north command.
+     */
     @Test
     @Transactional
-    public void postCommandTest() throws Exception {
+    void postCommandTest() throws Exception {
 
-        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
-        var jsonString = objectMapper.writeValueAsString(botDTO);
-
-        //POST new Entity
-        MvcResult result = mockMvc.perform(post("/explorationDrones")
-                        .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
-        String content = result.getResponse().getContentAsString();
-        String location = result.getResponse().getHeader("Location");
-        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
-
-        //Give Command to move north
-        String direction="north";
-        CommandRequestDto commandDTO = new CommandRequestDto(direction, resultDTO.getId());
-        jsonString = objectMapper.writeValueAsString(commandDTO);
-
-        List<Planet> planets = planetService.getAllPlanet();
-
-        mockMvc.perform(post(location+"/commands")
-                        .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated());
-
-        //GET the Updated Entity
-        mockMvc.perform(get(location)
-                        .accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(
+                        post("/api/v1/exploration-drones/spawn")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", Matchers.is(resultDTO.getId().toString())))
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName())))
-                .andExpect(jsonPath("$.planetId", Matchers.is(northernNeighbour.toString())));
+                .andReturn();
 
-    }
+        ExplorationDroneResponseDTO drone =
+                objectMapper.readValue(
+                        result.getResponse().getContentAsString(),
+                        ExplorationDroneResponseDTO.class
+                );
 
-    @Test
-    @Transactional
-    public void postGetCommandHistoryTest() throws Exception {
+        UUID droneId = drone.getId();
 
-        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
-        var jsonString = objectMapper.writeValueAsString(botDTO);
+        CommandRequestDto command =
+                new CommandRequestDto("north");
 
-        //POST new Entity
-        MvcResult result = mockMvc.perform(post("/explorationDrones")
-                        .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
-        String content = result.getResponse().getContentAsString();
-        String location = result.getResponse().getHeader("Location");
-        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
+        String json =
+                objectMapper.writeValueAsString(command);
 
-        //Give 5 commands
-        for (int i=0; i<5; i++) {
-            String direction = i%2==0? "north" : "south";
-            CommandRequestDto commandDTO = new CommandRequestDto(direction, resultDTO.getId());
-            jsonString = objectMapper.writeValueAsString(commandDTO);
-
-            mockMvc.perform(post(location + "/commands")
-                            .content(jsonString)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andDo(print())
-                    .andExpect(status().isCreated());
-        }
-
-        //Check if there are 5 commands
-        mockMvc.perform(get(location + "/commands")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", Matchers.is(5)));
-
-    }
-
-
-    @Test
-    @Transactional
-    public void clearCommandHistoryTest() throws Exception {
-
-        ExplorationDroneResponseDTO botDTO=getRandomExplorationDroneDTO();
-        var jsonString = objectMapper.writeValueAsString(botDTO);
-
-        //POST new Entity
-        MvcResult result = mockMvc.perform(post("/explorationDrones")
-                        .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", Matchers.is(botDTO.getName()))).andReturn();
-        String content = result.getResponse().getContentAsString();
-        String location = result.getResponse().getHeader("Location");
-        ExplorationDroneResponseDTO resultDTO = objectMapper.readValue(content, ExplorationDroneResponseDTO.class);
-
-        //Give 5 commands
-        for (int i=0; i<5; i++) {
-            String direction = i%2==0? "north" : "south";
-            CommandRequestDto commandDTO = new CommandRequestDto(direction, resultDTO.getId());
-            jsonString = objectMapper.writeValueAsString(commandDTO);
-
-            mockMvc.perform(post("/explorationDrones/" + resultDTO.getId() + "/commands")
-                            .content(jsonString)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andDo(print())
-                    .andExpect(status().isCreated());
-        }
-
-        //Check if there are 5 commands
-        mockMvc.perform(get(location + "/commands")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", Matchers.is(5)));
-
-        //perform DELETE on command history
-        mockMvc.perform(delete(location + "/commands")
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                        post("/api/v1/exploration-drones/"
+                                + droneId
+                                + "/commands")
+                                .content(json)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        //Check if there are no more commands
-        mockMvc.perform(get(location+ "/commands")
-                        .accept(MediaType.APPLICATION_JSON))
+        // Check new planet
+        mockMvc.perform(
+                        get("/api/v1/exploration-drones/" + droneId)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", Matchers.is(0)));
+                .andExpect(
+                        jsonPath("$.id",
+                                Matchers.is(droneId.toString()))
+                )
+                .andExpect(
+                        jsonPath("$.planetId",
+                                Matchers.is(
+                                        northernNeighbour.toString()
+                                ))
+                );
     }
 
+    /**
+     * Send five commands and check command history.
+     */
+    @Test
+    @Transactional
+    void postGetCommandHistoryTest() throws Exception {
 
+        MvcResult result = mockMvc.perform(
+                        post("/api/v1/exploration-drones/spawn")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ExplorationDroneResponseDTO drone =
+                objectMapper.readValue(
+                        result.getResponse().getContentAsString(),
+                        ExplorationDroneResponseDTO.class
+                );
+
+        UUID droneId = drone.getId();
+
+        for (int i = 0; i < 5; i++) {
+
+            String direction =
+                    i % 2 == 0 ? "north" : "south";
+
+            CommandRequestDto command =
+                    new CommandRequestDto(direction);
+
+            String json =
+                    objectMapper.writeValueAsString(command);
+
+            mockMvc.perform(
+                            post("/api/v1/exploration-drones/"
+                                    + droneId
+                                    + "/commands")
+                                    .content(json)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .accept(MediaType.APPLICATION_JSON)
+                    )
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        }
+
+        mockMvc.perform(
+                        get("/api/v1/exploration-drones/"
+                                + droneId
+                                + "/commands")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(
+                        jsonPath("$.size()",
+                                Matchers.is(5))
+                );
+    }
+
+    /**
+     * Send five commands, then clear command history.
+     */
+    @Test
+    @Transactional
+    void clearCommandHistoryTest() throws Exception {
+
+        MvcResult result = mockMvc.perform(
+                        post("/api/v1/exploration-drones/spawn")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ExplorationDroneResponseDTO drone =
+                objectMapper.readValue(
+                        result.getResponse().getContentAsString(),
+                        ExplorationDroneResponseDTO.class
+                );
+
+        UUID droneId = drone.getId();
+
+        String droneUrl =
+                "/api/v1/exploration-drones/" + droneId;
+
+        for (int i = 0; i < 5; i++) {
+
+            String direction =
+                    i % 2 == 0 ? "north" : "south";
+
+            CommandRequestDto command =
+                    new CommandRequestDto(direction);
+
+            String json =
+                    objectMapper.writeValueAsString(command);
+
+            mockMvc.perform(
+                            post(droneUrl + "/commands")
+                                    .content(json)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .accept(MediaType.APPLICATION_JSON)
+                    )
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        }
+
+        // Check five commands
+        mockMvc.perform(
+                        get(droneUrl + "/commands")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(
+                        jsonPath("$.size()",
+                                Matchers.is(5))
+                );
+
+        // Clear history
+        mockMvc.perform(
+                        delete(droneUrl + "/commands")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        // Check history is empty
+        mockMvc.perform(
+                        get(droneUrl + "/commands")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(
+                        jsonPath("$.size()",
+                                Matchers.is(0))
+                );
+    }
 }
