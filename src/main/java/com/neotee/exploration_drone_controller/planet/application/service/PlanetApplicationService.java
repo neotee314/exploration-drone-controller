@@ -33,7 +33,7 @@ public class PlanetApplicationService implements PlanetFinderInterface, SpaceSta
 
     public Planet createPlanet() {
         var planet = Planet.create();
-        planet.setPlanetType(planetRepository.count() == 0 ? SPACE_STATION : UNKNOWN);
+        planet.changePlanetTypeTo(planetRepository.count() == 0 ? SPACE_STATION : UNKNOWN);
         return planetRepository.save(planet);
     }
 

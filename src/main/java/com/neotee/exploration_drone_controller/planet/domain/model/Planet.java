@@ -19,11 +19,11 @@ import static com.neotee.exploration_drone_controller.domainprimitives.PlanetVis
 import static com.neotee.exploration_drone_controller.domainprimitives.PlanetVisitStatus.VISITED;
 
 @Entity
-@Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Planet extends AggregateRoot<PlanetId> {
 
+    @Setter
     protected String name;
 
     @OneToOne
@@ -42,6 +42,7 @@ public class Planet extends AggregateRoot<PlanetId> {
     @JoinColumn(name = "east_planet_id")
     protected Planet east;
 
+
     protected PlanetType planetType;
 
     @Embedded
@@ -57,9 +58,9 @@ public class Planet extends AggregateRoot<PlanetId> {
     protected Planet(PlanetId planetId) {
         this.id = planetId;
         this.uranium = Uranium.fromAmount(0);
-        setPlanetType(UNKNOWN);
+        this.planetType = UNKNOWN;
         this.isMined = false;
-        setVisitStatus(NOT_VISITED);
+        this.visitStatus = NOT_VISITED;
     }
 
     public static Planet create() {
@@ -120,8 +121,8 @@ public class Planet extends AggregateRoot<PlanetId> {
     public void reduceUranium(Uranium mineQuantity) {
         if (isOrigin())
             throw new ExplorationDroneControlException("Cannot reduce Uranium from space station");
-        this.setUranium(mineQuantity.subtractFrom(uranium));
-        this.setIsMined(true);
+        this.uranium = mineQuantity.subtractFrom(uranium);
+        this.isMined = true;
     }
 
     public Boolean isVisited() {
@@ -129,7 +130,7 @@ public class Planet extends AggregateRoot<PlanetId> {
     }
 
     public void markPlanetVisited() {
-        this.setVisitStatus(VISITED);
+        this.visitStatus = VISITED;
     }
 
 
@@ -189,7 +190,7 @@ public class Planet extends AggregateRoot<PlanetId> {
     }
 
     public void markPlanetRegular() {
-        this.setPlanetType(PlanetType.REGULAR);
+        this.planetType = PlanetType.REGULAR;
     }
 
     @Override
@@ -205,4 +206,7 @@ public class Planet extends AggregateRoot<PlanetId> {
     }
 
 
+    public void changePlanetTypeTo(PlanetType planetType) {
+        this.planetType = planetType;
+    }
 }

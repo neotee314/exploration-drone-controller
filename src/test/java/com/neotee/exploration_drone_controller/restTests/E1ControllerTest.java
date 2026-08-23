@@ -68,7 +68,7 @@ public class E1ControllerTest {
     void spawnAndGetTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
-                        post("/api/v1/exploration-drones/spawn")
+                        post("/api/v1/explorationDrones/spawn")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -86,7 +86,7 @@ public class E1ControllerTest {
         UUID droneId = drone.getId();
 
         mockMvc.perform(
-                        get("/api/v1/exploration-drones/" + droneId)
+                        get("/api/v1/explorationDrones/" + droneId)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -108,7 +108,7 @@ public class E1ControllerTest {
 
         for (int i = 0; i < size; i++) {
             mockMvc.perform(
-                            post("/api/v1/exploration-drones/spawn")
+                            post("/api/v1/explorationDrones/spawn")
                                     .accept(MediaType.APPLICATION_JSON)
                     )
                     .andDo(print())
@@ -118,7 +118,7 @@ public class E1ControllerTest {
         }
 
         mockMvc.perform(
-                        get("/api/v1/exploration-drones")
+                        get("/api/v1/explorationDrones")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -136,7 +136,7 @@ public class E1ControllerTest {
     void spawnDeleteGetTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
-                        post("/api/v1/exploration-drones/spawn")
+                        post("/api/v1/explorationDrones/spawn")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -150,7 +150,7 @@ public class E1ControllerTest {
                 );
 
         String droneUrl =
-                "/api/v1/exploration-drones/" + drone.getId();
+                "/api/v1/explorationDrones/" + drone.getId();
 
         // GET
         mockMvc.perform(
@@ -187,7 +187,7 @@ public class E1ControllerTest {
     void postCommandTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
-                        post("/api/v1/exploration-drones/spawn")
+                        post("/api/v1/explorationDrones/spawn")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -209,7 +209,7 @@ public class E1ControllerTest {
                 objectMapper.writeValueAsString(command);
 
         mockMvc.perform(
-                        post("/api/v1/exploration-drones/"
+                        post("/api/v1/explorationDrones/"
                                 + droneId
                                 + "/commands")
                                 .content(json)
@@ -221,7 +221,7 @@ public class E1ControllerTest {
 
         // Check new planet
         mockMvc.perform(
-                        get("/api/v1/exploration-drones/" + droneId)
+                        get("/api/v1/explorationDrones/" + droneId)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -246,7 +246,7 @@ public class E1ControllerTest {
     void postGetCommandHistoryTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
-                        post("/api/v1/exploration-drones/spawn")
+                        post("/api/v1/explorationDrones/spawn")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -273,7 +273,7 @@ public class E1ControllerTest {
                     objectMapper.writeValueAsString(command);
 
             mockMvc.perform(
-                            post("/api/v1/exploration-drones/"
+                            post("/api/v1/explorationDrones/"
                                     + droneId
                                     + "/commands")
                                     .content(json)
@@ -285,7 +285,7 @@ public class E1ControllerTest {
         }
 
         mockMvc.perform(
-                        get("/api/v1/exploration-drones/"
+                        get("/api/v1/explorationDrones/"
                                 + droneId
                                 + "/commands")
                                 .accept(MediaType.APPLICATION_JSON)
@@ -306,7 +306,7 @@ public class E1ControllerTest {
     void clearCommandHistoryTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
-                        post("/api/v1/exploration-drones/spawn")
+                        post("/api/v1/explorationDrones/spawn")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -322,7 +322,7 @@ public class E1ControllerTest {
         UUID droneId = drone.getId();
 
         String droneUrl =
-                "/api/v1/exploration-drones/" + droneId;
+                "/api/v1/explorationDrones/" + droneId;
 
         for (int i = 0; i < 5; i++) {
 

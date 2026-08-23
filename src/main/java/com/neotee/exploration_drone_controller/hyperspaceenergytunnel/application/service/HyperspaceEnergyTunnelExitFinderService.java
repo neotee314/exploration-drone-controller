@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class HyperspaceEnergyTunnelExitFinderService
-        implements HyperspaceTunnelExitFinder {
+public class HyperspaceEnergyTunnelExitFinderService implements HyperspaceTunnelExitFinder {
 
     private final HyperspaceEnergyTunnelRepository hyperspaceEnergyTunnelRepository;
 

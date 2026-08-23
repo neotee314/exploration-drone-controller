@@ -2,6 +2,7 @@ package com.neotee.exploration_drone_controller.explorationdrone.application.ser
 
 import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
+import com.neotee.exploration_drone_controller.exceptions.DroneNotFoundException;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.model.ExplorationDrone;
 import com.neotee.exploration_drone_controller.explorationdrone.domain.repository.ExplorationDroneRepository;
 import com.neotee.exploration_drone_controller.planet.application.service.DroneDeletionService;
@@ -47,7 +48,7 @@ public class ExplorationDroneApplicationService {
 
     public ExplorationDrone findById(ExplorationDroneId id) {
         return explorationDroneRepository.findById(id)
-                .orElseThrow(() -> new DomainValidationException("ExplorationDroneApplicationService", "Drone not found with id: " + id));
+                .orElseThrow(() -> new DroneNotFoundException("ExplorationDroneApplicationService", "Drone not found with id: " + id));
     }
 
 
@@ -59,7 +60,7 @@ public class ExplorationDroneApplicationService {
 
     public void clearCommandHistory(ExplorationDroneId droneId) {
         var drone = findById(droneId);
-        drone.getCommandHistory().clear();
+        drone.clearCommandHistory();
         explorationDroneRepository.save(drone);
     }
 
