@@ -1,7 +1,7 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.mapper;
 
 import com.neotee.exploration_drone_controller.explorationdrone.application.dto.ExplorationDroneResponseDTO;
-import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDrone;
+import com.neotee.exploration_drone_controller.explorationdrone.domain.model.ExplorationDrone;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +11,9 @@ public class ExplorationDroneMapper {
 
     public ExplorationDroneResponseDTO toDTO(ExplorationDrone drone) {
         var dto = new ExplorationDroneResponseDTO();
-        dto.setId(drone.getDroneId());
+        dto.setId(drone.getId());
         dto.setName(drone.getName());
-        dto.setPlanetId(drone.getPlanet().getPlanetId());
+        dto.setPlanetId(drone.getPlanet().getId());
         dto.setCommandHistory(drone.getCommandHistory().stream().map(commandMapper::toDTO).toList());
         return dto;
     }
@@ -21,13 +21,13 @@ public class ExplorationDroneMapper {
     public ExplorationDrone toEntity(ExplorationDroneResponseDTO dto) {
         var drone = new ExplorationDrone();
 
-        drone.setDroneId(dto.getId());
+        drone.setId(dto.getId());
         drone.setName(dto.getName());
         drone.setCommandHistory(dto.getCommandHistory().stream().map(commandMapper::toCommand).toList());
 
         if (dto.getPlanetId() != null) {
             var planet = new Planet();
-            planet.setPlanetId(dto.getPlanetId());
+            planet.setId(dto.getPlanetId());
             drone.setPlanet(planet);
         }
 

@@ -1,21 +1,22 @@
 package com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain;
 
-import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.core.AggregateRoot;
+import com.neotee.exploration_drone_controller.domainprimitives.HyperspaceEnergyTunnelId;
+import com.neotee.exploration_drone_controller.domainprimitives.TunnelState;
+import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class HyperspaceEnergyTunnel  {
+public class HyperspaceEnergyTunnel extends AggregateRoot<HyperspaceEnergyTunnelId> {
     @Id
-    protected UUID id;
+    protected HyperspaceEnergyTunnelId id;
 
     @OneToOne
     protected Planet entryPlanet;
@@ -26,23 +27,26 @@ public class HyperspaceEnergyTunnel  {
     @Enumerated(EnumType.STRING)
     private TunnelState tunnelState;
 
+    private HyperspaceEnergyTunnel(HyperspaceEnergyTunnelId id) {
+        this.id = id;
+        this.tunnelState = TunnelState.INACTIVE;
+
+    }
+
+    public static HyperspaceEnergyTunnel create(HyperspaceEnergyTunnelId id) {
+        return new HyperspaceEnergyTunnel(id);
+    }
+
+
     public void relocate(Planet entryPlanet, Planet exitPlanet) {
-        if (entryPlanet == null || exitPlanet == null || entryPlanet.equals(exitPlanet))
-            throw new ExplorationDroneControlException("entryPlanet and exitPlanet must not be null");
-
-        if (this.isInActive()) throw new ExplorationDroneControlException("Tunnel is inactive");
-
-        this.entryPlanet.removeHyperTunnel(this);
-
-        entryPlanet.addHyperTunnel(this);
-
+        if (this.isInActive()) throw new DomainValidationException("Tunnel", "Tunnel is inactive");
         this.entryPlanet = entryPlanet;
         this.exitPlanet = exitPlanet;
     }
 
 
     public void shutdown() {
-        if (this.isInActive()) throw new ExplorationDroneControlException("Double shutdown is not possible");
+        if (this.isInActive()) throw new DomainValidationException("Tunnel", "Double shutdown is not possible");
         this.tunnelState = TunnelState.INACTIVE;
     }
 
@@ -52,17 +56,8 @@ public class HyperspaceEnergyTunnel  {
 
 
     public void install(Planet entryPlanet, Planet exitPlanet) {
-        if (entryPlanet == null || exitPlanet == null)
-            throw new ExplorationDroneControlException("entryPlanet and exitPlanet must not be null");
-
         if (entryPlanet.equals(exitPlanet))
-            throw new ExplorationDroneControlException("Entry and exit planet cannot be the same");
-
-        if (entryPlanet.hasAlreadyHyperTunnel())
-            throw new ExplorationDroneControlException("Entry planet already has a hyperspace energy tunnel");
-
-        entryPlanet.addHyperTunnel(this);
-
+            throw new DomainValidationException("Tunnel", "Entry and exit planet cannot be the same");
         this.setEntryPlanet(entryPlanet);
         this.setExitPlanet(exitPlanet);
         this.activate();
@@ -71,10 +66,5 @@ public class HyperspaceEnergyTunnel  {
 
     public Boolean isInActive() {
         return this.tunnelState == TunnelState.INACTIVE;
-    }
-
-
-    public Planet getExitPlanet() {
-        return this.exitPlanet;
     }
 }

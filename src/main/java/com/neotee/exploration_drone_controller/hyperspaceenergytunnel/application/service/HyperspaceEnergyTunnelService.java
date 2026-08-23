@@ -1,68 +1,51 @@
 package com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.service;
 
-import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
-import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.TunnelValidator;
+import com.neotee.exploration_drone_controller.domainprimitives.HyperspaceEnergyTunnelId;
+import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
+import com.neotee.exploration_drone_controller.explorationdrone.application.service.HyperTunnelInterface;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain.HyperspaceEnergyTunnel;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.domain.HyperspaceEnergyTunnelRepository;
-import com.neotee.exploration_drone_controller.planet.application.service.PlanetService;
-import com.neotee.exploration_drone_controller.planet.application.TunnelServiceInterface;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 
 @Service
 @RequiredArgsConstructor
-public class HyperspaceEnergyTunnelService implements TunnelServiceInterface {
+public class HyperspaceEnergyTunnelService implements HyperTunnelInterface {
 
     private final HyperspaceEnergyTunnelRepository hyperspaceEnergyTunnelRepository;
-    private final PlanetService planetService;
-    private final PlanetValidator planetValidator;
-    private final TunnelValidator tunnelValidator;
 
 
-    public HyperspaceEnergyTunnel findById(UUID hypertunnelId) {
+    public HyperspaceEnergyTunnel findById(HyperspaceEnergyTunnelId hypertunnelId) {
         return hyperspaceEnergyTunnelRepository.findById(hypertunnelId).orElse(null);
 
     }
 
-    @Transactional
-    public UUID installHyperspaceEnergyTunnel(UUID entryPlanetId, UUID exitPlanetId) {
-        Planet entryPlanet = planetValidator.validatePlanetExists(entryPlanetId);
-        Planet exitPlanet = planetValidator.validatePlanetExists(exitPlanetId);
 
-        HyperspaceEnergyTunnel tunnel = new HyperspaceEnergyTunnel();
+    public HyperspaceEnergyTunnelId installHyperspaceEnergyTunnel(Planet entryPlanet, Planet exitPlanet) {
+        var tunnel = new HyperspaceEnergyTunnel();
         tunnel.install(entryPlanet, exitPlanet);
-
-        planetService.save(entryPlanet);
-        planetService.save(exitPlanet);
         hyperspaceEnergyTunnelRepository.save(tunnel);
         return tunnel.getId();
     }
 
-    @Transactional
-    public void relocateHyperspaceEnergyTunnel(UUID tunnelId, UUID entryPlanetId, UUID exitPlanetId) {
-        if (tunnelId == null)
-            throw new ExplorationDroneControlException("IDs cannot be null");
-        Planet entryPlanet = planetValidator.validatePlanetExists(entryPlanetId);
-        Planet exitPlanet = planetValidator.validatePlanetExists(exitPlanetId);
 
-        HyperspaceEnergyTunnel tunnel = hyperspaceEnergyTunnelRepository.findById(tunnelId)
-                .orElseThrow(() -> new ExplorationDroneControlException("Tunnel not found"));
+    public void relocateHyperspaceEnergyTunnel(HyperspaceEnergyTunnel tunnel, Planet entryPlanet, Planet exitPlanet) {
         tunnel.relocate(entryPlanet, exitPlanet);
         hyperspaceEnergyTunnelRepository.save(tunnel);
     }
 
-    @Transactional
-    public void shutdownHyperspaceEnergyTunnel(UUID tunnelId) {
-        if (tunnelId == null)
-            throw new ExplorationDroneControlException("tunnel not found");
-        HyperspaceEnergyTunnel tunnel = (HyperspaceEnergyTunnel) tunnelValidator.validateTunnelExists(tunnelId);
+
+    public void shutdownHyperspaceEnergyTunnel(HyperspaceEnergyTunnel tunnel) {
         tunnel.shutdown();
         hyperspaceEnergyTunnelRepository.save(tunnel);
     }
 
+    @Override
+    public Planet findByEntryPlanet(Planet entryPlanet) {
+        return hyperspaceEnergyTunnelRepository.findByEntryPlanet(entryPlanet)
+                .orElseThrow(() -> new DomainValidationException("HyperSpaceEnergyTunnel", "No hyperspace tunnel on this planet"));
+    }
 }

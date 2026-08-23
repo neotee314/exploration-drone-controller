@@ -1,13 +1,14 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.service;
 
+import com.neotee.exploration_drone_controller.domainprimitives.ExplorationDroneId;
 import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.explorationdrone.application.mapper.ExplorationDroneMapper;
 import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandRequestDto;
 import com.neotee.exploration_drone_controller.explorationdrone.application.dto.ExplorationDroneResponseDTO;
 import com.neotee.exploration_drone_controller.explorationdrone.application.mapper.CommandMapper;
-import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDrone;
-import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDroneRepository;
+import com.neotee.exploration_drone_controller.explorationdrone.domain.model.ExplorationDrone;
+import com.neotee.exploration_drone_controller.explorationdrone.domain.repository.ExplorationDroneRepository;
 import com.neotee.exploration_drone_controller.planet.application.service.PlanetApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -70,9 +71,9 @@ public class ExplorationDroneApplicationService {
     }
 
     public ExplorationDrone spawn() {
-        UUID droneId = UUID.randomUUID();
+        var droneId =ExplorationDroneId.newId();
         var spaceSation = planetService.getSpaceStation();
-        var drone = ExplorationDrone.of(spaceSation, droneId);
+        var drone = ExplorationDrone.create(spaceSation, droneId);
         return explorationDroneRepository.save(drone);
     }
 }

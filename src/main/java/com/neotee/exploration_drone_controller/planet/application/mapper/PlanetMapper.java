@@ -1,13 +1,9 @@
 package com.neotee.exploration_drone_controller.planet.application.mapper;
 
 import com.neotee.exploration_drone_controller.explorationdrone.application.mapper.UraniumMapper;
-import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDrone;
 import com.neotee.exploration_drone_controller.planet.application.dto.PlanetResponseDto;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.UUID;
 
 @Component
 public class PlanetMapper {
@@ -21,22 +17,22 @@ public class PlanetMapper {
     public PlanetResponseDto toDTO(Planet planet) {
         var dto = new PlanetResponseDto();
 
-        dto.setPlanetId(planet.getPlanetId());
+        dto.setPlanetId(planet.getId());
 
         if (planet.getNorth() != null) {
-            dto.setNorthId(planet.getNorth().getPlanetId());
+            dto.setNorthId(planet.getNorth().getId());
         }
 
         if (planet.getEast() != null) {
-            dto.setEastId(planet.getEast().getPlanetId());
+            dto.setEastId(planet.getEast().getId());
         }
 
         if (planet.getSouth() != null) {
-            dto.setSouthId(planet.getSouth().getPlanetId());
+            dto.setSouthId(planet.getSouth().getId());
         }
 
         if (planet.getWest() != null) {
-            dto.setWestId(planet.getWest().getPlanetId());
+            dto.setWestId(planet.getWest().getId());
         }
 
         dto.setPlanetType(
@@ -58,7 +54,7 @@ public class PlanetMapper {
     public Planet toEntity(PlanetResponseDto dto) {
         var planet = new Planet();
 
-        planet.setPlanetId(dto.getPlanetId());
+        planet.setId(dto.getPlanetId());
 
         planet.setPlanetType(
                 dto.getPlanetType() != null
@@ -69,25 +65,25 @@ public class PlanetMapper {
 
         if (dto.getNorthId() != null) {
             var north = new Planet();
-            north.setPlanetId(dto.getNorthId());
+            north.setId(dto.getNorthId());
             planet.setNorth(north);
         }
 
         if (dto.getEastId() != null) {
             var east = new Planet();
-            east.setPlanetId(dto.getEastId());
+            east.setId(dto.getEastId());
             planet.setEast(east);
         }
 
         if (dto.getSouthId() != null) {
             var south = new Planet();
-            south.setPlanetId(dto.getSouthId());
+            south.setId(dto.getSouthId());
             planet.setSouth(south);
         }
 
         if (dto.getWestId() != null) {
             var west = new Planet();
-            west.setPlanetId(dto.getWestId());
+            west.setId(dto.getWestId());
             planet.setWest(west);
         }
 

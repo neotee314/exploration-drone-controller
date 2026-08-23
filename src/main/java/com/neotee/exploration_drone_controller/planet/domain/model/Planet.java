@@ -1,10 +1,7 @@
 package com.neotee.exploration_drone_controller.planet.domain.model;
 
+import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
-import com.neotee.exploration_drone_controller.domainprimitives.CompassPoint;
-import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
-import com.neotee.exploration_drone_controller.domainprimitives.PlanetType;
-import com.neotee.exploration_drone_controller.domainprimitives.PlanetVisitStatus;
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -24,7 +21,7 @@ import static com.neotee.exploration_drone_controller.domainprimitives.PlanetVis
 public class Planet {
 
     @Id
-    private UUID planetId;
+    private PlanetId id;
 
     @OneToOne
     protected Planet north;
@@ -49,7 +46,7 @@ public class Planet {
 
 
     public Planet() {
-        this.planetId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.uranium = Uranium.fromAmount(0);
         setPlanetType(UNKNOWN);
         this.isMined = false;
@@ -153,12 +150,12 @@ public class Planet {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Planet planet = (Planet) o;
-        return Objects.equals(getPlanetId(), planet.getPlanetId());
+        return Objects.equals(getId(), planet.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getPlanetId());
+        return Objects.hashCode(getId());
     }
 
 }

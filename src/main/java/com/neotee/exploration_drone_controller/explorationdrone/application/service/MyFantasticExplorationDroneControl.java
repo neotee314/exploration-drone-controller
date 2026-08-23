@@ -1,11 +1,13 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.service;
 
 import certification.ExplorationDroneControl;
-import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
+import com.neotee.exploration_drone_controller.domainprimitives.ExplorationDroneId;
+import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
 import certification.HyperspaceEnergyTunnelUseCases;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.domainprimitives.Load;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
+import com.neotee.exploration_drone_controller.explorationdrone.domain.repository.ExplorationDroneRepository;
 import com.neotee.exploration_drone_controller.planet.application.service.PlanetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,40 +21,47 @@ import java.util.UUID;
 @ComponentScan("com.neotee.exploration_drone_controller")
 public class MyFantasticExplorationDroneControl implements ExplorationDroneControl {
 
-    private final ExplorationDroneManagementService explorationDroneService;
+    private final SpawnService spawnService;
+    private final ExplorationDroneRepository explorationDroneRepository;
     private final PlanetService planetService;
-    private final HyperspaceEnergyTunnelUseCases hyperspaceEnergyTunnelUseCases;
+    private final HyperTunnelInterface hyperTunnelInterface;
     private final MovementService movementService;
     private final MiningService miningService;
 
 
-
     @Override
     public void executeCommand(Command command) {
-        if (command == null)
-            throw new ExplorationDroneControlException("Command cannot be null");
-        UUID droneId = command.getExplorationDroneId();
-        if (command.isSpawn()) explorationDroneService.spawn(droneId);
-        else if (command.isMove())
-            movementService.move(droneId, command.getMoveDirection());
-        else if (command.isExplore())
-            movementService.explore(droneId);
-        else if (command.isGohome())
-            movementService.goHome(droneId);
-        else if (command.isTransport())
-            movementService.transport(droneId);
-        else if (command.isMine())
-            miningService.mine(droneId);
+        if (command == null) throw new DomainValidationException("Drone", "Command cannot be null");
+        var droneUuid = command.getExplorationDroneId();
+        var droneId = ExplorationDroneId.of(droneUuid);
+        if (command.isSpawn()) {
+            explorationDroneRepository.findById(droneId).orElseThrow(() -> new DomainValidationException("Drone", "Drone already exists"));
+            spawnService.spawn(droneId);
+        } else {
+            var explorationDrone = explorationDroneRepository.findById(droneId).orElseThrow(() -> new DomainValidationException("Drone", "Drone does not exist"));
+            if (command.isMove()) {
+                movementService.move(explorationDrone, command.getMoveDirection());
+            } else if (command.isExplore())
+                movementService.explore(explorationDrone);
+            else if (command.isGohome())
+                movementService.goHome(explorationDrone);
+            else if (command.isTransport()) {
+                var entryPlanet = explorationDrone.getPlanet();
+                var exitPlanet = hyperTunnelInterface.findByEntryPlanet(entryPlanet);
+                movementService.transport(explorationDrone, exitPlanet);
+            } else if (command.isMine())
+                miningService.mine(explorationDrone);
+        }
     }
 
     @Override
     public Load getExplorationDroneLoad(UUID explorationDroneId) {
-        return explorationDroneService.getExplorationDroneLoad(explorationDroneId);
+        return spawnService.getExplorationDroneLoad(explorationDroneId);
     }
 
     @Override
     public UUID getExplorationDronePlanet(UUID explorationDroneId) {
-        return explorationDroneService.getDronePlanet(explorationDroneId);
+        return spawnService.getDronePlanet(explorationDroneId);
     }
 
     @Override
@@ -67,12 +76,12 @@ public class MyFantasticExplorationDroneControl implements ExplorationDroneContr
 
     @Override
     public List<UUID> getPlanetExplorationDrones(UUID planetId) {
-       return planetService.getDronesOf(planetId);
+        return planetService.getDronesOf(planetId);
     }
 
     @Override
     public List<UUID> getPlanets() {
-      return planetService.getPlanets();
+        return planetService.getPlanets();
     }
 
     @Override
@@ -95,7 +104,7 @@ public class MyFantasticExplorationDroneControl implements ExplorationDroneContr
 
     @Override
     public UUID resetAll() {
-        explorationDroneService.deleteAll();
+        spawnService.deleteAll();
         return planetService.resetAll();
     }
 }

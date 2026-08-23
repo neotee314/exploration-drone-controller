@@ -32,16 +32,16 @@ public class Command {
             throw new ExplorationDroneControlException("Invalid command format");
         }
 
-        String[] parts = input.substring(1, input.length() - 1).split(",", 2);
-        String command = parts[0];
-        String uuidString = parts[1];
+        var parts = input.substring(1, input.length() - 1).split(",", 2);
+        var command = parts[0];
+        var uuidString = parts[1];
 
         if (!isValidCommand(command)) {
             throw new ExplorationDroneControlException("Unknown command: " + command);
         }
 
         try {
-            UUID droneId = UUID.fromString(uuidString);
+            var droneId = UUID.fromString(uuidString);
             return new Command(command, droneId);
         } catch (IllegalArgumentException e) {
             throw new ExplorationDroneControlException("Invalid UUID format");

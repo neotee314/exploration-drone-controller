@@ -20,7 +20,7 @@ public class SpaceStation extends Planet {
 
 
     public SpaceStation() {
-        this.setPlanetId(UUID.randomUUID());
+        this.setId(UUID.randomUUID());
         this.planetType = SPACE_STATION;
         this.uranium = Uranium.fromAmount(0);
     }

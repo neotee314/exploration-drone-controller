@@ -26,7 +26,7 @@ public class NeighbourPlanetService {
         var neighbour =  planetRepository.findById(planetId)
                 .orElseGet(() -> {
                     var found = new Planet();
-                    found.setPlanetId(planetId);
+                    found.setId(planetId);
                     return found;
                 });
 

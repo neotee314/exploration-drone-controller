@@ -6,7 +6,7 @@ import com.neotee.exploration_drone_controller.explorationdrone.application.dto.
 import com.neotee.exploration_drone_controller.explorationdrone.application.mapper.CommandMapper;
 import com.neotee.exploration_drone_controller.explorationdrone.application.mapper.ExplorationDroneMapper;
 import com.neotee.exploration_drone_controller.explorationdrone.application.service.ExplorationDroneApplicationService;
-import com.neotee.exploration_drone_controller.explorationdrone.domain.ExplorationDroneRepository;
+import com.neotee.exploration_drone_controller.explorationdrone.domain.repository.ExplorationDroneRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

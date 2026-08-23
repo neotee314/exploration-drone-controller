@@ -78,7 +78,7 @@ public class PlanetService {
     public List<UUID> getPlanets() {
         List<Planet> planets = getAllPlanet();
         List<UUID> planetIds = new ArrayList<>();
-        planets.forEach(planet -> planetIds.add(planet.getPlanetId()));
+        planets.forEach(planet -> planetIds.add(planet.getId()));
         return planetIds;
     }
 
@@ -87,7 +87,7 @@ public class PlanetService {
         planetRepository.deleteAll();
         SpaceStation spaceStation = new SpaceStation();
         planetRepository.save(spaceStation);
-        return spaceStation.getPlanetId();
+        return spaceStation.getId();
     }
 
     public Planet getSpaceStation() {
