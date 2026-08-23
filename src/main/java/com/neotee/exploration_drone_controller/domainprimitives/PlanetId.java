@@ -1,16 +1,15 @@
 package com.neotee.exploration_drone_controller.domainprimitives;
 
-
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
+import jakarta.persistence.Embeddable;
 
 import java.util.UUID;
 
+@Embeddable
 public class PlanetId extends GenericId {
 
-
-    protected UUID id;
-
-    private PlanetId() {
+    protected PlanetId() {
+        super();
     }
 
     public PlanetId(UUID id) {
@@ -26,12 +25,20 @@ public class PlanetId extends GenericId {
     }
 
     public static PlanetId of(String id) {
-        if (id == null || id.isBlank())
-            throw new DomainValidationException("PlanetId", "id must not be null or blank");
+        if (id == null || id.isBlank()) {
+            throw new DomainValidationException(
+                    "PlanetId",
+                    "id must not be null or blank"
+            );
+        }
+
         try {
             return new PlanetId(UUID.fromString(id));
         } catch (IllegalArgumentException ex) {
-            throw new DomainValidationException("PlanetId", "must be a valid UUID:");
+            throw new DomainValidationException(
+                    "PlanetId",
+                    "must be a valid UUID"
+            );
         }
     }
 }

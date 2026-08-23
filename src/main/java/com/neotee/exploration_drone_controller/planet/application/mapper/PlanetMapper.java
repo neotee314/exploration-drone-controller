@@ -1,6 +1,5 @@
 package com.neotee.exploration_drone_controller.planet.application.mapper;
 
-import com.neotee.exploration_drone_controller.explorationdrone.application.mapper.UraniumMapper;
 import com.neotee.exploration_drone_controller.planet.application.dto.PlanetResponseDto;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import org.springframework.stereotype.Component;
@@ -8,86 +7,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class PlanetMapper {
 
-    private final UraniumMapper uraniumMapper;
-
-    public PlanetMapper(UraniumMapper uraniumMapper) {
-        this.uraniumMapper = uraniumMapper;
-    }
-
     public PlanetResponseDto toDTO(Planet planet) {
-        var dto = new PlanetResponseDto();
-
-        dto.setPlanetId(planet.getId());
-
-        if (planet.getNorth() != null) {
-            dto.setNorthId(planet.getNorth().getId());
-        }
-
-        if (planet.getEast() != null) {
-            dto.setEastId(planet.getEast().getId());
-        }
-
-        if (planet.getSouth() != null) {
-            dto.setSouthId(planet.getSouth().getId());
-        }
-
-        if (planet.getWest() != null) {
-            dto.setWestId(planet.getWest().getId());
-        }
-
-        dto.setPlanetType(
-                planet.getPlanetType() != null
-                        ? planet.getPlanetType().getValue()
-                        : null
-        );
-
-        dto.setUranium(
-                planet.getUranium() != null
-                        ? uraniumMapper.toDTO(planet.getUranium())
-                        : null
-        );
-
-
-        return dto;
-    }
-
-    public Planet toEntity(PlanetResponseDto dto) {
-        var planet = new Planet();
-
-        planet.setId(dto.getPlanetId());
-
-        planet.setPlanetType(
-                dto.getPlanetType() != null
-                        ? com.neotee.exploration_drone_controller.domainprimitives.PlanetType
-                        .valueOf(dto.getPlanetType())
-                        : null
-        );
-
-        if (dto.getNorthId() != null) {
-            var north = new Planet();
-            north.setId(dto.getNorthId());
-            planet.setNorth(north);
-        }
-
-        if (dto.getEastId() != null) {
-            var east = new Planet();
-            east.setId(dto.getEastId());
-            planet.setEast(east);
-        }
-
-        if (dto.getSouthId() != null) {
-            var south = new Planet();
-            south.setId(dto.getSouthId());
-            planet.setSouth(south);
-        }
-
-        if (dto.getWestId() != null) {
-            var west = new Planet();
-            west.setId(dto.getWestId());
-            planet.setWest(west);
-        }
-
-
-        return planet;
+        return PlanetResponseDto.builder()
+                .planetId(planet.getId().getId())
+                .northId(planet.getNorth() != null ? planet.getNorth().getId().getId() : null)
+                .eastId(planet.getEast() != null ? planet.getEast().getId().getId() : null)
+                .southId(planet.getSouth() != null ? planet.getSouth().getId().getId() : null)
+                .westId(planet.getWest() != null ? planet.getWest().getId().getId() : null)
+                .planetType(planet.getPlanetType().getValue())
+                .uranium(planet.getUranium() != null ? planet.getUranium().getAmount() : null)
+                .build();
     }
 }

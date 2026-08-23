@@ -1,28 +1,21 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.mapper;
 
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
+import com.neotee.exploration_drone_controller.domainprimitives.ExplorationDroneId;
 import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandRequestDto;
-import org.mapstruct.Mapper;
+import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandResponseDto;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface CommandMapper {
+@Component
+public class CommandMapper {
 
-    default Command toCommand(CommandRequestDto commandDTO) {
-        if (commandDTO == null) {
-            return null;
-        }
-
-        String commandString = "[" + commandDTO.getCommandString() + "," + commandDTO.getExplorationDroneId() + "]";
-        return Command.fromCommandString(commandString);
+    public Command toCommand(ExplorationDroneId droneId, CommandRequestDto dto) {
+        return Command.fromCommandString("[" + dto.getCommandString() + "," + droneId.value() + "]");
     }
 
-    default CommandRequestDto toDTO(Command command) {
-        if (command == null) {
-            return null;
-        }
-        return new CommandRequestDto(
-                command.getCommandString(),
-                command.getExplorationDroneId()
-        );
+    public CommandResponseDto toDTO(Command command) {
+        return CommandResponseDto.builder()
+                .commandString(command.getCommandString())
+                .build();
     }
 }

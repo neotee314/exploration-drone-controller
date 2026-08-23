@@ -1,4 +1,4 @@
-package certification;
+package com.neotee.exploration_drone_controller.certification;
 
 
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;

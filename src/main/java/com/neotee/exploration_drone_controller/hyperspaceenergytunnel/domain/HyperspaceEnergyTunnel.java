@@ -6,6 +6,7 @@ import com.neotee.exploration_drone_controller.domainprimitives.TunnelState;
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,10 +14,8 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HyperspaceEnergyTunnel extends AggregateRoot<HyperspaceEnergyTunnelId> {
-    @Id
-    protected HyperspaceEnergyTunnelId id;
 
     @OneToOne
     protected Planet entryPlanet;
@@ -27,16 +26,11 @@ public class HyperspaceEnergyTunnel extends AggregateRoot<HyperspaceEnergyTunnel
     @Enumerated(EnumType.STRING)
     private TunnelState tunnelState;
 
-    private HyperspaceEnergyTunnel(HyperspaceEnergyTunnelId id) {
-        this.id = id;
-        this.tunnelState = TunnelState.INACTIVE;
+    private HyperspaceEnergyTunnel(Planet entryPlanet, Planet exitPlanet) {
+        this.id = HyperspaceEnergyTunnelId.newId();
+        this.activate();
 
     }
-
-    public static HyperspaceEnergyTunnel create(HyperspaceEnergyTunnelId id) {
-        return new HyperspaceEnergyTunnel(id);
-    }
-
 
     public void relocate(Planet entryPlanet, Planet exitPlanet) {
         if (this.isInActive()) throw new DomainValidationException("Tunnel", "Tunnel is inactive");
@@ -55,12 +49,10 @@ public class HyperspaceEnergyTunnel extends AggregateRoot<HyperspaceEnergyTunnel
     }
 
 
-    public void install(Planet entryPlanet, Planet exitPlanet) {
+    public static HyperspaceEnergyTunnel install(Planet entryPlanet, Planet exitPlanet) {
         if (entryPlanet.equals(exitPlanet))
             throw new DomainValidationException("Tunnel", "Entry and exit planet cannot be the same");
-        this.setEntryPlanet(entryPlanet);
-        this.setExitPlanet(exitPlanet);
-        this.activate();
+        return new HyperspaceEnergyTunnel(entryPlanet, exitPlanet);
     }
 
 

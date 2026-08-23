@@ -1,16 +1,14 @@
 package com.neotee.exploration_drone_controller.domainprimitives;
 
-
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
+import jakarta.persistence.Embeddable;
 
 import java.util.UUID;
 
+@Embeddable
 public class ExplorationDroneId extends GenericId {
 
-
-    protected UUID id;
-
-    private ExplorationDroneId() {
+    protected ExplorationDroneId() {
     }
 
     public ExplorationDroneId(UUID id) {
@@ -26,12 +24,20 @@ public class ExplorationDroneId extends GenericId {
     }
 
     public static ExplorationDroneId of(String id) {
-        if (id == null || id.isBlank())
-            throw new DomainValidationException("ExplorationDroneId", "id must not be null or blank");
+        if (id == null || id.isBlank()) {
+            throw new DomainValidationException(
+                    "ExplorationDroneId",
+                    "id must not be null or blank"
+            );
+        }
+
         try {
             return new ExplorationDroneId(UUID.fromString(id));
         } catch (IllegalArgumentException ex) {
-            throw new DomainValidationException("ExplorationDroneId", "must be a valid UUID:");
+            throw new DomainValidationException(
+                    "ExplorationDroneId",
+                    "must be a valid UUID"
+            );
         }
     }
 }

@@ -1,10 +1,13 @@
 package com.neotee.exploration_drone_controller.planet.domain.model;
 
+import com.neotee.exploration_drone_controller.core.AggregateRoot;
 import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import jakarta.persistence.*;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
@@ -18,18 +21,25 @@ import static com.neotee.exploration_drone_controller.domainprimitives.PlanetVis
 @Entity
 @Getter
 @Setter
-public class Planet {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Planet extends AggregateRoot<PlanetId> {
 
-    @Id
-    private PlanetId id;
+    protected String name;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "north_planet_id")
     protected Planet north;
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "south_planet_id")
     protected Planet south;
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "west_planet_id")
     protected Planet west;
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "east_planet_id")
     protected Planet east;
 
     protected PlanetType planetType;
@@ -38,19 +48,29 @@ public class Planet {
     protected Uranium uranium;
 
 
+
+
     @Enumerated(EnumType.STRING)
     private PlanetVisitStatus visitStatus;
 
 
-    private boolean isMined;
+    private Boolean isMined;
 
-
-    public Planet() {
-        this.id = UUID.randomUUID();
+    protected Planet(PlanetId planetId) {
+        this.id = planetId;
         this.uranium = Uranium.fromAmount(0);
         setPlanetType(UNKNOWN);
         this.isMined = false;
         setVisitStatus(NOT_VISITED);
+    }
+
+    public static Planet create() {
+        var planetId = PlanetId.newId();
+        return new Planet(planetId);
+    }
+
+    public static Planet create(PlanetId planetId) {
+        return new Planet(planetId);
     }
 
 
@@ -66,15 +86,28 @@ public class Planet {
         }
     }
 
-    public void addNeighbour(Planet neighbor, CompassPoint direction) {
-        if (direction.equals(NORTH)) {
-            this.setNorth(neighbor);
-        } else if (direction.equals(SOUTH)) {
-            this.setSouth(neighbor);
-        } else if (direction.equals(EAST)) {
-            this.setEast(neighbor);
-        } else if (direction.equals(WEST)) {
-            this.setWest(neighbor);
+    public void addNeighbour(Planet neighbour, CompassPoint direction) {
+        switch (direction) {
+
+            case NORTH -> {
+                this.north = neighbour;
+                neighbour.south = this;
+            }
+
+            case SOUTH -> {
+                this.south = neighbour;
+                neighbour.north = this;
+            }
+
+            case EAST -> {
+                this.east = neighbour;
+                neighbour.west = this;
+            }
+
+            case WEST -> {
+                this.west = neighbour;
+                neighbour.east = this;
+            }
         }
     }
 
@@ -90,7 +123,7 @@ public class Planet {
         if (isOrigin())
             throw new ExplorationDroneControlException("Cannot reduce Uranium from space station");
         this.setUranium(mineQuantity.subtractFrom(uranium));
-        this.setMined(true);
+        this.setIsMined(true);
     }
 
     public Boolean isVisited() {
@@ -146,6 +179,9 @@ public class Planet {
     }
 
 
+    public Boolean checkIfMined() {
+        return isMined;
+    }
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

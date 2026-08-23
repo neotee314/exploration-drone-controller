@@ -48,6 +48,7 @@ dependencies {
 	// Tests
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 
 	// Other libraries
 	testImplementation 'com.github.divekit:divekit-test-library:e90e4e7'

@@ -1,9 +1,8 @@
 package com.neotee.exploration_drone_controller.explorationdrone.application.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.neotee.exploration_drone_controller.domainprimitives.ExplorationDroneId;
+import com.neotee.exploration_drone_controller.domainprimitives.PlanetId;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,9 +11,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Getter
+@Builder
 public class ExplorationDroneResponseDTO {
     private String name;
     private UUID id;
     private UUID planetId;
-    private List<CommandRequestDto> commandHistory;
+    private List<CommandResponseDto> commandHistory;
 }

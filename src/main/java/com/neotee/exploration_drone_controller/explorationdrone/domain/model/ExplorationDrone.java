@@ -1,186 +1,235 @@
 package com.neotee.exploration_drone_controller.explorationdrone.domain.model;
 
 import com.neotee.exploration_drone_controller.core.AggregateRoot;
+import com.neotee.exploration_drone_controller.domainprimitives.*;
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
 import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
-import com.neotee.exploration_drone_controller.domainprimitives.*;
-import com.neotee.exploration_drone_controller.domainprimitives.TransportState;
 import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import net.datafaker.Faker;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 import static com.neotee.exploration_drone_controller.domainprimitives.TransportState.NOT_TRANSPORTED;
 import static com.neotee.exploration_drone_controller.domainprimitives.TransportState.TRANSPORTED;
 
-
-@Getter
-@Setter
 @Entity
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ExplorationDrone extends AggregateRoot<ExplorationDroneId> {
 
-    @Id
-    protected ExplorationDroneId id;
+    @ManyToOne
+    private Planet planet;
 
-    protected String name;
+    private String name;
 
     @Embedded
-    protected CompassPointPath path;
-
-    @ManyToOne
-    protected Planet planet;
+    private CompassPointPath path;
 
     @Enumerated(EnumType.STRING)
-    protected TransportState transportState;
+    private TransportState transportState;
 
     @Embedded
-    protected Load load;
+    private Load load;
 
     @ElementCollection
     @CollectionTable
     private List<Command> commandHistory;
 
     private ExplorationDrone(Planet planet, ExplorationDroneId id) {
-        this.id = id;
+        super(id);
+
+        if (planet == null)
+            throw new DomainValidationException("ExplorationDrone", "Cannot create a drone on nothing");
+
         this.planet = planet;
         this.name = generateCoolName();
-        this.load = Load.fromCapacityAndFilling(20, Uranium.fromAmount(0));
-        this.transportState = NOT_TRANSPORTED;
         this.path = CompassPointPath.empty();
+        this.load = Load.fromCapacityAndFilling(20, Uranium.fromAmount(0));
         this.commandHistory = new ArrayList<>();
+        this.transportState = NOT_TRANSPORTED;
     }
 
     public static ExplorationDrone create(Planet planet, ExplorationDroneId id) {
-        if (planet == null) throw new ExplorationDroneControlException("cannot create a Drone on nothing");
+        if (id == null) {
+            throw new ExplorationDroneControlException(
+                    "Drone id must not be null"
+            );
+        }
+
         return new ExplorationDrone(planet, id);
-
     }
 
+    public void move(CompassPoint direction) {
+        var targetPlanet = planet.getNeighbourOf(direction);
 
-    public void move(CompassPoint movement) {
-        var movingPlanet = planet.getNeighbourOf(movement);
-        if (movingPlanet == null) throw new ExplorationDroneControlException("No moving against block");
-        this.planet = movingPlanet;
-        planet.markPlanetVisited();
-        this.path = this.path.addMovement(movement);
+        if (targetPlanet == null) {
+            throw new ExplorationDroneControlException(
+                    "No planet in this direction"
+            );
+        }
+
+        this.planet = targetPlanet;
+        targetPlanet.markPlanetVisited();
+        this.path = path.addMovement(direction);
     }
-
 
     public void transport(Planet exitPlanet) {
+        if (exitPlanet == null) {
+            throw new ExplorationDroneControlException(
+                    "Exit planet must not be null"
+            );
+        }
+
         this.planet = exitPlanet;
         this.transportState = TRANSPORTED;
     }
 
-
     public void gohome() {
-        if (this.isTransported())
-            throw new DomainValidationException("Drone", "is already transported");
+        if (isTransported()) {
+            throw new DomainValidationException(
+                    "Drone",
+                    "is already transported"
+            );
+        }
 
-
-        var path = this.getPath();
         var direction = path.directionToGoBackTo();
 
         if (direction == null) {
-            throw new DomainValidationException("Drone", "No direction available to go home.");
+            throw new DomainValidationException(
+                    "Drone",
+                    "No direction available to go home."
+            );
         }
 
-        this.planet = planet.getNeighbourOf(direction);
-        planet.markPlanetVisited();
-        this.setPath(this.path.backtrackLastMovement());
-    }
+        var targetPlanet = planet.getNeighbourOf(direction);
 
+        if (targetPlanet == null) {
+            throw new ExplorationDroneControlException(
+                    "No planet in this direction"
+            );
+        }
+
+        this.planet = targetPlanet;
+        targetPlanet.markPlanetVisited();
+        this.path = path.backtrackLastMovement();
+    }
 
     public void explore() {
         var unvisitedNeighbours = planet.getUnvisitedNeighbours();
         var visitedNeighbours = planet.getVisitedNeighbours();
 
-        var options = !unvisitedNeighbours.isEmpty() ? unvisitedNeighbours : visitedNeighbours;
+        var options = !unvisitedNeighbours.isEmpty()
+                ? unvisitedNeighbours
+                : visitedNeighbours;
 
         if (options.isEmpty()) {
-            throw new DomainValidationException("Drone", "All surrounding planets are inaccessible.");
+            throw new DomainValidationException(
+                    "Drone",
+                    "All surrounding planets are inaccessible."
+            );
         }
 
-        var targetPlanet = options.get(new Random().nextInt(options.size()));
+        var targetPlanet = options.get(
+                new Random().nextInt(options.size())
+        );
+
         var direction = planet.getDirectionTo(targetPlanet);
 
-        if (direction == null)
-            throw new DomainValidationException("Drone", "Direction to target planet could not be determined.");
+        if (direction == null) {
+            throw new DomainValidationException(
+                    "Drone",
+                    "Direction to target planet could not be determined."
+            );
+        }
 
-        var movingPlanet = planet.getNeighbourOf(direction);
-        if (movingPlanet == null)
-            throw new DomainValidationException("Drone", "No moving against block");
-
-        this.planet = movingPlanet;
-        planet.markPlanetVisited();
-
-        this.path = this.path.addMovement(direction);
+        move(direction);
     }
-
-
-    private String generateCoolName() {
-        Faker faker = new Faker();
-        return faker.name().firstName() + " " + faker.funnyName().name();
-    }
-
-
-    public boolean isTransported() {
-        return transportState == TRANSPORTED;
-    }
-
 
     public void mine() {
-        if (planet.isMined())
-            throw new DomainValidationException("Drone", "Planet is already mined");
+        if (planet.checkIfMined()) {
+            throw new DomainValidationException(
+                    "Drone",
+                    "Planet is already mined"
+            );
+        }
 
-        if (planet.isOrigin())
-            throw new DomainValidationException("Drone", "Mining on the origin planet is not allowed");
+        if (planet.isOrigin()) {
+            throw new DomainValidationException(
+                    "Drone",
+                    "Mining on the origin planet is not allowed"
+            );
+        }
 
         var available = planet.getUranium();
         var excess = load.leaveBehindWhenFillingFrom(available);
+
         this.load = load.fillFrom(available);
 
         var mined = excess.subtractFrom(available);
         planet.reduceUranium(mined);
     }
 
+    public boolean isTransported() {
+        return transportState == TRANSPORTED;
+    }
 
     public Uranium getUranium() {
-        return this.getLoad().getUranium();
+        return load.getUranium();
     }
 
-
-    public void sendCommand(Command command) {
-        if (command.isMove())
-            move(command.getMoveDirection());
-        else if (command.isExplore())
-            explore();
-        else if (command.isGohome())
-            gohome();
-        else if (command.isTransport())
-            transport();
-        else if (command.isMine())
-            mine();
-        if (!command.isSpawn()) {
-            commandHistory.add(command);
+    public void changeName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new DomainValidationException(
+                    "Drone",
+                    "Name must not be null or blank"
+            );
         }
+
+        this.name = name;
     }
 
+    public void addCommand(Command command) {
+        if (command == null) {
+            throw new ExplorationDroneControlException(
+                    "Command must not be null"
+            );
+        }
+
+        commandHistory.add(command);
+    }
+
+    public List<Command> getCommandHistory() {
+        return List.copyOf(commandHistory);
+    }
+
+    private static String generateCoolName() {
+        var faker = new Faker();
+        return faker.name().firstName() + " " + faker.funnyName().name();
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        ExplorationDrone drone = (ExplorationDrone) o;
-        return Objects.equals(getId(), drone.getId());
-    }
+        if (this == o) {
+            return true;
+        }
 
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ExplorationDrone drone = (ExplorationDrone) o;
+        return Objects.equals(id, drone.id);
+    }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hashCode(id);
     }
 }

@@ -4,6 +4,6 @@ import com.neotee.exploration_drone_controller.planet.domain.model.Planet;
 
 
 
-public interface HyperTunnelInterface {
+public interface HyperspaceTunnelExitFinder {
     Planet findByEntryPlanet(Planet entryPlanet);
 }

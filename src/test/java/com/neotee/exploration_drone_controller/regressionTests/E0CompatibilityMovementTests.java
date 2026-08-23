@@ -1,8 +1,8 @@
 package com.neotee.exploration_drone_controller.regressionTests;
 
 import com.neotee.exploration_drone_controller.ExplorationDroneControllerApplication;
-import certification.ExplorationDroneControl;
-import certification.PlanetExamining;
+import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
+import com.neotee.exploration_drone_controller.certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
 import com.neotee.exploration_drone_controller.core.TestHelper;

@@ -6,12 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class CommandRequestDto {
-    @NotBlank
-    private String commandString;
+public class CompassPointDto {
+
+    @NotNull @NotBlank
+    private String direction;
 }

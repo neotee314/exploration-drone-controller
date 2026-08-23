@@ -1,6 +1,7 @@
 package com.neotee.exploration_drone_controller.domainprimitives;
 
 import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,11 +21,11 @@ public class Command {
 
     private String command;
 
-    private UUID explorationDroneId;
+    private UUID droneId;
 
     private Command(String command, UUID droneId) {
         this.command = command;
-        this.explorationDroneId = droneId;
+        this.droneId = droneId;
     }
 
     public static Command fromCommandString(String input) {
