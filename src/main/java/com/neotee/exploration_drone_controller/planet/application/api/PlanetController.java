@@ -9,7 +9,6 @@ import com.neotee.exploration_drone_controller.planet.application.dto.UraniumReq
 import com.neotee.exploration_drone_controller.planet.application.mapper.PlanetMapper;
 import com.neotee.exploration_drone_controller.planet.application.service.MapGeneratorService;
 import com.neotee.exploration_drone_controller.planet.application.service.MapVisualizationService;
-import com.neotee.exploration_drone_controller.planet.application.service.NeighbourCompletionService;
 import com.neotee.exploration_drone_controller.planet.application.service.PlanetApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -38,14 +37,14 @@ public class PlanetController {
     public ResponseEntity<PlanetResponseDto> createPlanet() {
         var planet = planetApplicationService.createPlanet();
         var location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(planet.getId().value()).toUri();
-        return ResponseEntity.created(location).body(planetMapper.toDTO(planet));
+        return ResponseEntity.created(location).body(planetMapper.toDto(planet));
     }
 
     @Operation(summary = "Generate a random planet map")
     @PostMapping("/generate/{planetCount}")
     public ResponseEntity<PlanetResponseDto> generateMap(@PathVariable int planetCount) {
         var spaceStation = mapGeneratorService.generateMap(planetCount);
-        return ResponseEntity.ok(planetMapper.toDTO(spaceStation));
+        return ResponseEntity.ok(planetMapper.toDto(spaceStation));
     }
 
     @GetMapping(value = "/map", produces = MediaType.TEXT_HTML_VALUE)
@@ -59,13 +58,13 @@ public class PlanetController {
     public ResponseEntity<PlanetResponseDto> addNeighbour(@PathVariable UUID planetId, @Valid @RequestBody AddNeighbourRequestDto dto) {
         var planet = planetApplicationService.addNeighbour(PlanetId.of(planetId), PlanetId.of(dto.getNeighbourId()), CompassPoint.fromString(dto.getCompassPointDTO().getDirection()));
         var location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(planet.getId().value()).toUri();
-        return ResponseEntity.created(location).body(planetMapper.toDTO(planet));
+        return ResponseEntity.created(location).body(planetMapper.toDto(planet));
     }
 
     @Operation(summary = "Get all planets")
     @GetMapping
     public ResponseEntity<List<PlanetResponseDto>> getAllPlanets() {
-        var response = planetApplicationService.getAllPlanets().stream().map(planetMapper::toDTO).toList();
+        var response = planetApplicationService.getAllPlanets().stream().map(planetMapper::toDto).toList();
         return ResponseEntity.ok(response);
     }
 
@@ -73,7 +72,7 @@ public class PlanetController {
     @PostMapping("/{planetId}/uraniums")
     public ResponseEntity<PlanetResponseDto> addUranium(@PathVariable UUID planetId, @Valid @RequestBody UraniumRequestDto dto) {
         var planet = planetApplicationService.addUranium(PlanetId.of(planetId), Uranium.fromAmount(dto.getAmount()));
-        return ResponseEntity.ok(planetMapper.toDTO(planet));
+        return ResponseEntity.ok(planetMapper.toDto(planet));
     }
 
     @Operation(summary = "Reset all planets")
@@ -81,6 +80,6 @@ public class PlanetController {
     public ResponseEntity<PlanetResponseDto> resetPlanets() {
         var spaceStation = planetApplicationService.resetAll();
         if (spaceStation == null) return ResponseEntity.noContent().build();
-        return ResponseEntity.ok(planetMapper.toDTO(spaceStation));
+        return ResponseEntity.ok(planetMapper.toDto(spaceStation));
     }
 }

@@ -64,7 +64,6 @@ public class E1ControllerTest {
      * Spawn a drone and then GET it.
      */
     @Test
-    @Transactional
     void spawnAndGetTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
@@ -101,7 +100,6 @@ public class E1ControllerTest {
      * Spawn five drones and check GET all.
      */
     @Test
-    @Transactional
     void spawnAndGetAllTest() throws Exception {
 
         int size = 5;
@@ -132,7 +130,6 @@ public class E1ControllerTest {
      * Spawn a drone and delete it.
      */
     @Test
-    @Transactional
     void spawnDeleteGetTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
@@ -183,7 +180,6 @@ public class E1ControllerTest {
      * Spawn a drone and send north command.
      */
     @Test
-    @Transactional
     void postCommandTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
@@ -242,7 +238,6 @@ public class E1ControllerTest {
      * Send five commands and check command history.
      */
     @Test
-    @Transactional
     void postGetCommandHistoryTest() throws Exception {
 
         MvcResult result = mockMvc.perform(
@@ -302,7 +297,6 @@ public class E1ControllerTest {
      * Send five commands, then clear command history.
      */
     @Test
-    @Transactional
     void clearCommandHistoryTest() throws Exception {
 
         MvcResult result = mockMvc.perform(

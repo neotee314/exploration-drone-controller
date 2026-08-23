@@ -29,11 +29,16 @@ public class Command {
     }
 
     public static Command fromCommandString(String input) {
-        if (input == null || !input.matches("\\[\\w+,[a-fA-F0-9\\-]+\\]")) {
+        if (input == null || !input.startsWith("[") || !input.endsWith("]")) {
             throw new ExplorationDroneControlException("Invalid command format");
         }
 
         var parts = input.substring(1, input.length() - 1).split(",", 2);
+
+        if (parts.length != 2) {
+            throw new ExplorationDroneControlException("Invalid command format");
+        }
+
         var command = parts[0];
         var uuidString = parts[1];
 

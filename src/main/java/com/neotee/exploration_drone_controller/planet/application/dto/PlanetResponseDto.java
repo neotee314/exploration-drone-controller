@@ -1,19 +1,15 @@
 package com.neotee.exploration_drone_controller.planet.application.dto;
 
-import lombok.Builder;
-import lombok.Data;
-
 import java.util.UUID;
 
-@Data
-@Builder
-public class PlanetResponseDto {
 
-    private UUID planetId;
-    private UUID northId;
-    private UUID eastId;
-    private UUID southId;
-    private UUID westId;
-    private String planetType;
-    private Integer uranium;
+public record PlanetResponseDto(
+        UUID planetId,
+        UUID northId,
+        UUID eastId,
+        UUID southId,
+        UUID westId,
+        String planetType,
+        int uranium
+) {
 }

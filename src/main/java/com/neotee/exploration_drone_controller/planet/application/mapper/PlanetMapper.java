@@ -7,15 +7,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class PlanetMapper {
 
-    public PlanetResponseDto toDTO(Planet planet) {
-        return PlanetResponseDto.builder()
-                .planetId(planet.getId().getId())
-                .northId(planet.getNorth() != null ? planet.getNorth().getId().getId() : null)
-                .eastId(planet.getEast() != null ? planet.getEast().getId().getId() : null)
-                .southId(planet.getSouth() != null ? planet.getSouth().getId().getId() : null)
-                .westId(planet.getWest() != null ? planet.getWest().getId().getId() : null)
-                .planetType(planet.getPlanetType().getValue())
-                .uranium(planet.getUranium() != null ? planet.getUranium().getAmount() : null)
-                .build();
+    public PlanetResponseDto toDto(Planet planet) {
+        return new PlanetResponseDto(
+                planet.getId().getId(),
+
+                planet.getNorth() != null
+                        ? planet.getNorth().getId().getId()
+                        : null,
+
+                planet.getEast() != null
+                        ? planet.getEast().getId().getId()
+                        : null,
+
+                planet.getSouth() != null
+                        ? planet.getSouth().getId().getId()
+                        : null,
+
+                planet.getWest() != null
+                        ? planet.getWest().getId().getId()
+                        : null,
+
+                planet.getPlanetType().getValue(),
+
+                planet.getUranium() != null
+                        ? planet.getUranium().getAmount()
+                        : 0
+        );
     }
 }
