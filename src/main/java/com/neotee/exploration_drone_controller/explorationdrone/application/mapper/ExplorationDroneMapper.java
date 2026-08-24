@@ -12,11 +12,10 @@ public class ExplorationDroneMapper {
     private final CommandMapper commandMapper;
 
     public ExplorationDroneResponseDTO toDto(ExplorationDrone drone) {
-        return ExplorationDroneResponseDTO.builder()
-                .name(drone.getName())
-                .id(drone.getId().getId())
-                .planetId(drone.getPlanet().getId().getId())
-                .commandHistory(drone.getCommandHistory().stream().map(commandMapper::toDTO).toList())
-                .build();
+        return new ExplorationDroneResponseDTO(
+                drone.getName(),
+                drone.getId().getId(),
+                drone.getPlanet().getId().getId(),
+                drone.getCommandHistory().stream().map(commandMapper::toDTO).toList());
     }
 }

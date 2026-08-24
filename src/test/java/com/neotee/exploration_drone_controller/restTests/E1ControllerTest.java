@@ -87,7 +87,7 @@ public class E1ControllerTest {
                         ExplorationDroneResponseDTO.class
                 );
 
-        UUID droneId = drone.getId();
+        UUID droneId = drone.id();
 
         mockMvc.perform(
                         get("/api/v1/explorationDrones/" + droneId)
@@ -152,7 +152,7 @@ public class E1ControllerTest {
                 );
 
         String droneUrl =
-                "/api/v1/explorationDrones/" + drone.getId();
+                "/api/v1/explorationDrones/" + drone.id();
 
         // GET
         mockMvc.perform(
@@ -162,7 +162,7 @@ public class E1ControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id",
-                        Matchers.is(drone.getId().toString())));
+                        Matchers.is(drone.id().toString())));
 
         // DELETE
         mockMvc.perform(
@@ -201,7 +201,7 @@ public class E1ControllerTest {
                         ExplorationDroneResponseDTO.class
                 );
 
-        UUID droneId = drone.getId();
+        UUID droneId = drone.id();
 
         CommandRequestDto command =
                 new CommandRequestDto("north");
@@ -259,7 +259,7 @@ public class E1ControllerTest {
                         ExplorationDroneResponseDTO.class
                 );
 
-        UUID droneId = drone.getId();
+        UUID droneId = drone.id();
 
         for (int i = 0; i < 5; i++) {
 
@@ -318,7 +318,7 @@ public class E1ControllerTest {
                         ExplorationDroneResponseDTO.class
                 );
 
-        UUID droneId = drone.getId();
+        UUID droneId = drone.id();
 
         String droneUrl =
                 "/api/v1/explorationDrones/" + droneId;

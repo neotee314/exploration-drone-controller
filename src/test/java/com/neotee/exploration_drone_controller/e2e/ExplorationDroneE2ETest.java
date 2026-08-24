@@ -319,8 +319,7 @@ public class ExplorationDroneE2ETest {
     // ================================================================
 
     private void addUranium(UUID planetId, int amount) {
-        UraniumRequestDto dto = new UraniumRequestDto();
-        dto.setAmount(amount);
+        UraniumRequestDto dto = new UraniumRequestDto(amount);
         restTemplate.postForEntity(
                 baseUrl + "/planets/{planetId}/uraniums",
                 dto,
@@ -343,8 +342,7 @@ public class ExplorationDroneE2ETest {
     }
 
     private void sendCommand(UUID droneId, String command) {
-        CommandRequestDto dto = new CommandRequestDto();
-        dto.setCommandString(command);
+        CommandRequestDto dto = new CommandRequestDto(command);
 
         //System.out.println("COMMAND = >" + command + "<");
 
@@ -399,9 +397,7 @@ public class ExplorationDroneE2ETest {
     // ================================================================
 
     private UUID installTunnel(UUID entryPlanetId, UUID exitPlanetId) {
-        HyperspaceEnergyTunnelRequestDto dto = new HyperspaceEnergyTunnelRequestDto();
-        dto.setEntryPlanetId(entryPlanetId);
-        dto.setExitPlanetId(exitPlanetId);
+        HyperspaceEnergyTunnelRequestDto dto = new HyperspaceEnergyTunnelRequestDto(entryPlanetId,exitPlanetId);
 
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 baseUrl + "/hyperspaceenergytunnels",
