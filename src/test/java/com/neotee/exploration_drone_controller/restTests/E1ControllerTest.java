@@ -2,6 +2,7 @@ package com.neotee.exploration_drone_controller.restTests;
 
 import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
 import com.neotee.exploration_drone_controller.certification.PlanetExamining;
+import com.neotee.exploration_drone_controller.config.TestContainersConfiguration;
 import com.neotee.exploration_drone_controller.explorationdrone.application.dto.CommandRequestDto;
 import com.neotee.exploration_drone_controller.explorationdrone.application.dto.ExplorationDroneResponseDTO;
 import org.hamcrest.Matchers;
@@ -9,9 +10,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(TestContainersConfiguration.class)
 public class E1ControllerTest {
 
     private UUID originId;

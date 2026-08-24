@@ -2,15 +2,17 @@ name: CI
 
 on:
   push:
+    branches: [ main, develop ]
   pull_request:
+    branches: [ main, develop ]
 
 jobs:
   test:
-    name: Run tests
+    name: Run Tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Java 26
@@ -20,7 +22,7 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission
+      - name: Grant execute permission to gradlew
         run: chmod +x gradlew
 
       - name: Run tests

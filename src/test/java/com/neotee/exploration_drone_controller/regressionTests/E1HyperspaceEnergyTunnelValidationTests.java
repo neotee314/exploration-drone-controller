@@ -2,6 +2,7 @@ package com.neotee.exploration_drone_controller.regressionTests;
 
 import com.neotee.exploration_drone_controller.ExplorationDroneControllerApplication;
 import com.neotee.exploration_drone_controller.certification.ExplorationDroneControl;
+import com.neotee.exploration_drone_controller.config.TestContainersConfiguration;
 import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.core.TestHelper;
@@ -9,11 +10,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = ExplorationDroneControllerApplication.class)
+@Import(TestContainersConfiguration.class)
+
+
 public class E1HyperspaceEnergyTunnelValidationTests {
     @Autowired
     private ExplorationDroneControl explorationDroneControl;

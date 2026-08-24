@@ -3,17 +3,36 @@ spring:
     name: exploration-drone-controller
 
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
-    username: sa
-    password:
+    url: jdbc:postgresql://localhost:5432/exploration_drone_db
+    username: hiccup
+    password: hiccup123
+    driver-class-name: org.postgresql.Driver
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        show_sql: false
+    open-in-view: false
+
+server:
+  port: 8080
 
 springdoc:
   swagger-ui:
     path: /mission-control
   api-docs:
     path: /v3/api-docs
+    enabled: true
+
+logging:
+  level:
+    com.neotee.exploration_drone_controller: INFO
+    org.hibernate.SQL: ERROR
+    org.hibernate.type.descriptor.sql.BasicBinder: ERROR
+    org.springframework.web: WARN
+    org.springframework.data.jpa: WARN
+    org.springframework.test.context: INFO

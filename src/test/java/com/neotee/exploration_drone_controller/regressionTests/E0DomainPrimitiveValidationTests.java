@@ -2,6 +2,7 @@ package com.neotee.exploration_drone_controller.regressionTests;
 
 
 import com.neotee.exploration_drone_controller.ExplorationDroneControllerApplication;
+import com.neotee.exploration_drone_controller.config.TestContainersConfiguration;
 import com.neotee.exploration_drone_controller.exceptions.ExplorationDroneControlException;
 import com.neotee.exploration_drone_controller.domainprimitives.Command;
 import com.neotee.exploration_drone_controller.domainprimitives.CompassPointPath;
@@ -10,11 +11,16 @@ import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest(classes = ExplorationDroneControllerApplication.class)
+@Import(TestContainersConfiguration.class)
+
+
 public class E0DomainPrimitiveValidationTests {
 
 
