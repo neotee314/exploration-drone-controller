@@ -56,7 +56,7 @@ public class PlanetController {
     @Operation(summary = "Add a neighbour to a planet in a given direction")
     @PostMapping("/{planetId}/neighbours")
     public ResponseEntity<PlanetResponseDto> addNeighbour(@PathVariable UUID planetId, @Valid @RequestBody AddNeighbourRequestDto dto) {
-        var planet = planetApplicationService.addNeighbour(PlanetId.of(planetId), PlanetId.of(dto.getNeighbourId()), CompassPoint.fromString(dto.getCompassPointDTO().getDirection()));
+        var planet = planetApplicationService.addNeighbour(PlanetId.of(planetId), PlanetId.of(dto.neighbourId()), CompassPoint.fromString(dto.compassPointDTO().direction()));
         var location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(planet.getId().value()).toUri();
         return ResponseEntity.created(location).body(planetMapper.toDto(planet));
     }
@@ -71,7 +71,7 @@ public class PlanetController {
     @Operation(summary = "Add uranium to a planet")
     @PostMapping("/{planetId}/uraniums")
     public ResponseEntity<PlanetResponseDto> addUranium(@PathVariable UUID planetId, @Valid @RequestBody UraniumRequestDto dto) {
-        var planet = planetApplicationService.addUranium(PlanetId.of(planetId), Uranium.fromAmount(dto.getAmount()));
+        var planet = planetApplicationService.addUranium(PlanetId.of(planetId), Uranium.fromAmount(dto.amount()));
         return ResponseEntity.ok(planetMapper.toDto(planet));
     }
 

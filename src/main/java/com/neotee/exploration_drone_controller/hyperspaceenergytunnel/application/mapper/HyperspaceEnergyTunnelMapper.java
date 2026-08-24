@@ -10,12 +10,11 @@ public class HyperspaceEnergyTunnelMapper {
 
 
     public HyperspaceEnergyTunnelResponseDto toDto(HyperspaceEnergyTunnel tunnel) {
-        return HyperspaceEnergyTunnelResponseDto.builder().
-                id(tunnel.getId().getId())
-                .tunnelState(tunnel.getTunnelState())
-                .entryPlanetId(tunnel.getEntryPlanet().getId().getId())
-                .exitPlanetId(tunnel.getExitPlanet().getId().getId())
-                .build();
+        return new HyperspaceEnergyTunnelResponseDto(
+                tunnel.getId().getId(),
+                tunnel.getTunnelState(),
+                tunnel.getEntryPlanet().getId().getId(),
+                tunnel.getExitPlanet().getId().getId());
     }
 
 }

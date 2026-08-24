@@ -10,12 +10,10 @@ import org.springframework.stereotype.Component;
 public class CommandMapper {
 
     public Command toCommand(ExplorationDroneId droneId, CommandRequestDto dto) {
-        return Command.fromCommandString("[" + dto.getCommandString() + "," + droneId.value() + "]");
+        return Command.fromCommandString("[" + dto.commandString() + "," + droneId.value() + "]");
     }
 
     public CommandResponseDto toDTO(Command command) {
-        return CommandResponseDto.builder()
-                .commandString(command.getCommandString())
-                .build();
+        return new CommandResponseDto(command.getCommand());
     }
 }

@@ -27,7 +27,7 @@ public class HyperspaceEnergyTunnelController {
     @Operation(summary = "Install tunnel")
     @PostMapping
     public ResponseEntity<HyperspaceEnergyTunnelResponseDto> install(@Valid @RequestBody HyperspaceEnergyTunnelRequestDto dto) {
-        var tunnel = tunnelService.install(PlanetId.of(dto.getEntryPlanetId()), PlanetId.of(dto.getExitPlanetId()));
+        var tunnel = tunnelService.install(PlanetId.of(dto.entryPlanetId()), PlanetId.of(dto.exitPlanetId()));
 
         var location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{tunnelId}")
@@ -61,8 +61,8 @@ public class HyperspaceEnergyTunnelController {
     @Operation(summary = "Relocate tunnel")
     @PutMapping("/{tunnelId}/relocate")
     public ResponseEntity<HyperspaceEnergyTunnelResponseDto> relocate(@PathVariable UUID tunnelId, @Valid @RequestBody HyperspaceEnergyTunnelRequestDto dto) {
-        var tunnel = tunnelService.relocate(HyperspaceEnergyTunnelId.of(tunnelId), PlanetId.of(dto.getEntryPlanetId()),
-                PlanetId.of(dto.getExitPlanetId()));
+        var tunnel = tunnelService.relocate(HyperspaceEnergyTunnelId.of(tunnelId), PlanetId.of(dto.entryPlanetId()),
+                PlanetId.of(dto.exitPlanetId()));
         return ResponseEntity.ok(mapper.toDto(tunnel));
     }
 }

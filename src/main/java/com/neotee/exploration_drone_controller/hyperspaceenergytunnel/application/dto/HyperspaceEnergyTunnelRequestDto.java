@@ -5,10 +5,9 @@ import lombok.Data;
 
 import java.util.UUID;
 
-@Data
-public class HyperspaceEnergyTunnelRequestDto {
-    @NotNull
-    private UUID entryPlanetId;
-    @NotNull
-    private UUID exitPlanetId;
+public record HyperspaceEnergyTunnelRequestDto(
+        @NotNull
+        UUID entryPlanetId,
+        @NotNull
+        UUID exitPlanetId) {
 }
