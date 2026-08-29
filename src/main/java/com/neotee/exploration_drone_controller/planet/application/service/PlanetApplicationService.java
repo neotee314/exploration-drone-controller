@@ -5,7 +5,6 @@ import com.neotee.exploration_drone_controller.domainprimitives.PlanetId;
 import com.neotee.exploration_drone_controller.domainprimitives.PlanetType;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
 import com.neotee.exploration_drone_controller.exceptions.DomainValidationException;
-import com.neotee.exploration_drone_controller.explorationdrone.application.service.MinedPlanetSaver;
 import com.neotee.exploration_drone_controller.explorationdrone.application.service.SpaceStationFinder;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.service.HyperspaceEnergyTunnelDeletionService;
 import com.neotee.exploration_drone_controller.hyperspaceenergytunnel.application.service.PlanetFinderInterface;
@@ -17,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 import static com.neotee.exploration_drone_controller.domainprimitives.PlanetType.SPACE_STATION;
 import static com.neotee.exploration_drone_controller.domainprimitives.PlanetType.UNKNOWN;

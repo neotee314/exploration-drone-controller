@@ -1,9 +1,8 @@
-package com.neotee.exploration_drone_controller.anticorruption;
+package com.neotee.exploration_drone_controller.planet.application.service;
 
 import com.neotee.exploration_drone_controller.certification.PlanetExamining;
 import com.neotee.exploration_drone_controller.domainprimitives.PlanetId;
 import com.neotee.exploration_drone_controller.domainprimitives.Uranium;
-import com.neotee.exploration_drone_controller.planet.application.service.PlanetApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
